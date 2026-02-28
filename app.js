@@ -52,7 +52,7 @@ document.addEventListener('DOMContentLoaded', () => {
     fetchCloudData();
 
     // Show version in console for debugging
-    console.log("SharkHome v2.3 Loaded");
+    console.log("SharkHome v2.4 Loaded");
 });
 
 // Tab Navigation
@@ -408,8 +408,45 @@ function initAnalytics() {
     const ctx = document.getElementById('expenseChart');
     if (!ctx) return;
 
-    // Register the datalabels plugin (v2.3)
+    // Register the datalabels plugin
     Chart.register(ChartDataLabels);
+
+    // v2.4: Custom Plugin for Polylines (Callout lines)
+    const polylinePlugin = {
+        id: 'polylines',
+        afterDraw: (chart) => {
+            const { ctx, chartArea: { width, height }, data } = chart;
+            if (!chart.isDatasetVisible(0)) return;
+
+            const dataset = chart.getDatasetMeta(0);
+            dataset.data.forEach((datapoint, index) => {
+                const { x, y, startAngle, endAngle, outerRadius } = datapoint;
+                const midAngle = startAngle + (endAngle - startAngle) / 2;
+
+                // Calculate points for the line
+                const x1 = x + Math.cos(midAngle) * outerRadius;
+                const y1 = y + Math.sin(midAngle) * outerRadius;
+
+                const x2 = x + Math.cos(midAngle) * (outerRadius + 15);
+                const y2 = y + Math.sin(midAngle) * (outerRadius + 15);
+
+                const x3 = x2 + (Math.cos(midAngle) >= 0 ? 10 : -10);
+                const y3 = y2;
+
+                // Only draw if label is shown (> 0)
+                const value = data.datasets[0].data[index];
+                if (value > 0) {
+                    ctx.beginPath();
+                    ctx.lineWidth = 1.5;
+                    ctx.strokeStyle = datapoint.options.backgroundColor;
+                    ctx.moveTo(x1, y1);
+                    ctx.lineTo(x2, y2);
+                    ctx.lineTo(x3, y3);
+                    ctx.stroke();
+                }
+            });
+        }
+    };
 
     expenseChart = new Chart(ctx, {
         type: 'doughnut',
@@ -425,11 +462,17 @@ function initAnalytics() {
                 hoverOffset: 15
             }]
         },
+        plugins: [polylinePlugin],
         options: {
             responsive: true,
             maintainAspectRatio: false,
             layout: {
-                padding: 10
+                padding: {
+                    left: 45,
+                    right: 45,
+                    top: 20,
+                    bottom: 20
+                }
             },
             plugins: {
                 legend: {
@@ -472,27 +515,29 @@ function initAnalytics() {
                         }
                     }
                 },
-                // v2.3: Data Labels inside segments
+                // v2.4: External Labels with lines
                 datalabels: {
+                    anchor: 'end',
+                    align: 'end',
+                    offset: 15,
                     color: '#fff',
                     font: {
                         family: 'Orbitron',
-                        size: 11,
-                        weight: '900'
+                        size: 9,
+                        weight: '700'
                     },
                     formatter: (value, ctx) => {
                         const total = ctx.dataset.data.reduce((a, b) => a + b, 0);
                         const pct = total > 0 ? Math.round((value / total) * 100) : 0;
-                        // Only show if > 5% to avoid clutter
-                        return pct > 5 ? `${ctx.chart.data.labels[ctx.dataIndex]}\n${pct}%` : '';
+                        if (pct === 0) return '';
+                        const label = ctx.chart.data.labels[ctx.dataIndex];
+                        return `${label}\n${pct}%`;
                     },
                     textAlign: 'center',
-                    textShadowColor: 'rgba(0,0,0,0.8)',
-                    textShadowBlur: 4,
                     display: 'auto'
                 }
             },
-            cutout: '55%' // Slightly smaller cutout to give more room for labels
+            cutout: '60%'
         }
     });
 
