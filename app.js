@@ -205,18 +205,20 @@ function initBills() {
     const inputAmount = document.getElementById('input-expense-amount');
 
     btnSave.addEventListener('click', () => {
-        const amount = inputAmount.value.trim();
-        if (amount && !isNaN(parseFloat(amount))) {
+        const value = inputAmount.value;
+        const amount = parseFloat(value);
+
+        if (!isNaN(amount) && amount > 0) {
             addExpense({
                 id: Date.now(),
                 category: selectedCategory,
-                amount: amount,
+                amount: amount.toFixed(2),
                 date: new Date().toISOString()
             });
             inputAmount.value = '';
-            showToast(`${selectedCategory}: ${amount} € spremljeno!`, 'success');
+            showToast(`${selectedCategory}: ${amount.toFixed(2)} € upisano!`, 'success');
         } else {
-            showToast("Unesi ispravan iznos.", "error");
+            showToast("Prvo upiši brojku!", "error");
         }
     });
 
