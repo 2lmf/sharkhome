@@ -164,6 +164,115 @@ h2 {
     box-shadow: 0 0 10px var(--accent-glow);
 }
 
+/* Shopping 2-row input */
+.shop-input-row {
+    margin-bottom: 0.5rem;
+}
+
+.shop-input-row input {
+    width: 100%;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid var(--glass-border);
+    border-radius: 14px;
+    padding: 0.9rem 1rem;
+    color: white;
+    font-family: 'Outfit', sans-serif;
+    font-size: 1rem;
+    outline: none;
+    transition: all 0.3s;
+}
+
+.shop-input-row input:focus {
+    border-color: var(--accent);
+    box-shadow: 0 0 12px rgba(230, 126, 34, 0.2);
+}
+
+.shop-actions-row {
+    display: flex;
+    gap: 0.6rem;
+    margin-bottom: 1.2rem;
+}
+
+.shop-action-btn {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.4rem;
+    padding: 0.7rem;
+    border-radius: 14px;
+    background: var(--card-bg);
+    border: 1px solid var(--glass-border);
+    color: var(--text-main);
+    font-family: 'Orbitron', sans-serif;
+    font-size: 0.8rem;
+    font-weight: 700;
+    letter-spacing: 1px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.shop-action-btn:hover {
+    border-color: var(--accent);
+    background: rgba(230, 126, 34, 0.1);
+}
+
+.shop-action-add {
+    background: var(--accent);
+    color: black;
+    border-color: var(--accent);
+    flex: 2;
+}
+
+.shop-action-add:hover {
+    background: #d06a15;
+    border-color: #d06a15;
+}
+
+/* Expense compact entry */
+.expense-entry {
+    display: flex;
+    gap: 0.6rem;
+    align-items: center;
+    margin-bottom: 1.2rem;
+    background: rgba(230, 126, 34, 0.06);
+    border: 1px solid var(--accent);
+    border-radius: 16px;
+    padding: 0.7rem 1rem;
+}
+
+.expense-entry input {
+    flex: 1;
+    background: transparent;
+    border: none;
+    color: white;
+    font-family: 'Orbitron', sans-serif;
+    font-size: 1.3rem;
+    font-weight: 700;
+    text-align: center;
+    outline: none;
+    min-width: 0;
+}
+
+.expense-entry button {
+    background: var(--accent);
+    color: black;
+    border: none;
+    border-radius: 10px;
+    padding: 0.6rem 1.4rem;
+    font-family: 'Orbitron', sans-serif;
+    font-weight: 900;
+    font-size: 0.85rem;
+    cursor: pointer;
+    letter-spacing: 1px;
+    transition: all 0.2s;
+    white-space: nowrap;
+}
+
+.expense-entry button:active {
+    transform: scale(0.95);
+}
+
 /* Input Styles */
 .input-group {
     display: flex;

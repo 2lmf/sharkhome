@@ -47,20 +47,32 @@
             </button>
         </nav>
 
-        <!-- View Containers -->
+        <!-- Shopping View -->
         <section id="view-shopping" class="tab-view active">
             <div class="view-header">
                 <h2>Popis za dućan</h2>
-                <button id="btn-scan-product" class="icon-btn">📷</button>
             </div>
 
-            <div class="input-group">
-                <input type="text" id="input-new-item" placeholder="Doda nešto na popis..." list="product-suggestions">
-                <datalist id="product-suggestions">
-                    <!-- Dynamic suggestions here -->
-                </datalist>
-                <button id="btn-voice" class="icon-btn" style="border-radius: 12px; margin-right: 5px;">🎤</button>
-                <button id="btn-add-item">+</button>
+            <!-- Row 1: text input -->
+            <div class="shop-input-row">
+                <input type="text" id="input-new-item" placeholder="Upiši stavku..." list="product-suggestions"
+                    autocomplete="off">
+                <datalist id="product-suggestions"></datalist>
+            </div>
+
+            <!-- Row 2: action buttons -->
+            <div class="shop-actions-row">
+                <button id="btn-voice" class="shop-action-btn">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                        stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="22" height="22">
+                        <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z" />
+                        <path d="M19 10v2a7 7 0 0 1-14 0v-2" />
+                        <line x1="12" y1="19" x2="12" y2="23" />
+                        <line x1="8" y1="23" x2="16" y2="23" />
+                    </svg>
+                    GLAS
+                </button>
+                <button id="btn-add-item" class="shop-action-btn shop-action-add">+ DODAJ</button>
             </div>
 
             <div id="shopping-list-container" class="scroll-area">
@@ -85,9 +97,9 @@
                 <button class="cat-btn" data-cat="Ostalo">❓ ostalo</button>
             </div>
 
-            <div class="input-group expense-input-group">
+            <div class="expense-entry">
                 <input type="number" id="input-expense-amount" placeholder="0.00" step="0.01">
-                <button id="btn-save-expense" class="btn-primary">UPIŠI</button>
+                <button id="btn-save-expense">UPIŠI</button>
             </div>
 
             <div class="list-title">Kronološki zapisi</div>
@@ -130,7 +142,7 @@
 
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://unpkg.com/html5-qrcode"></script>
-    <script src="app.js" type="module"></script>
+    <script src="app.js"></script>
 </body>
 
 </html>
