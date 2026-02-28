@@ -176,7 +176,7 @@ h2 {
     border-radius: 14px;
     padding: 0.9rem 1rem;
     color: white;
-    font-family: 'Outfit', sans-serif;
+    font-family: 'Orbitron', sans-serif;
     font-size: 1rem;
     outline: none;
     transition: all 0.3s;
@@ -235,29 +235,31 @@ h2 {
 .expense-entry-container {
     background: rgba(255, 255, 255, 0.02);
     border: 1px solid var(--glass-border);
-    border-radius: 24px;
-    padding: 1.5rem;
-    margin-bottom: 2.5rem;
+    border-radius: 18px;
+    padding: 1rem;
+    margin-bottom: 1.5rem;
     display: flex;
-    flex-direction: column;
-    gap: 1.2rem;
+    flex-direction: row;
+    align-items: stretch;
+    gap: 10px;
 }
 
 .amount-row {
+    flex: 1;
     display: flex;
     align-items: center;
-    justify-content: space-between;
-    gap: 15px;
+    justify-content: flex-start;
+    gap: 10px;
     background: rgba(0, 0, 0, 0.4);
-    border-radius: 18px;
-    padding: 1rem 1.5rem;
+    border-radius: 14px;
+    padding: 0 1rem;
     border: 2px solid var(--accent);
 }
 
 .currency-symbol {
     font-family: 'Orbitron', sans-serif;
     color: var(--accent);
-    font-size: 1.8rem;
+    font-size: 1.5rem;
     font-weight: 900;
 }
 
@@ -266,17 +268,16 @@ h2 {
     border: none;
     color: white;
     font-family: 'Orbitron', sans-serif;
-    font-size: 2.5rem;
-    /* Even larger */
+    font-size: 1.8rem;
     font-weight: 900;
     width: 100%;
     text-align: right;
-    /* Values on the right */
     outline: none;
 }
 
 .btn-confirm-upiši {
-    height: 54px;
+    height: auto;
+    padding: 0 1.5rem;
     background: var(--accent);
     color: black;
     border: none;
@@ -334,14 +335,14 @@ input[type="text"]:focus {
     justify-content: center;
     background: var(--card-bg);
     border: 1px solid var(--glass-border);
-    border-radius: 16px;
-    padding: 15px 10px;
-    font-size: 0.85rem;
+    border-radius: 12px;
+    padding: 8px 5px;
+    font-size: 0.75rem;
     color: var(--text-main);
     text-transform: uppercase;
     font-weight: 700;
     transition: all 0.2s;
-    min-height: 80px;
+    min-height: 55px;
 }
 
 .cat-btn:hover {
@@ -474,6 +475,12 @@ input[type="text"]:focus {
     align-items: center;
     animation: slideIn 0.3s ease-out;
     transition: all 0.3s;
+}
+
+.item-text {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 0.95rem;
+    font-weight: 400;
 }
 
 .list-item:hover {

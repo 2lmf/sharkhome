@@ -7,6 +7,7 @@ const state = {
     shoppingList: [],
     expenses: [],
     recipes: [],
+    customProducts: [],
     config: {
         apiUrl: 'https://script.google.com/macros/s/AKfycbyQmtsILzYGXAPvPBFU5tvEObBnns3AFD4H9DLj20aYWXv7I_zJ3wpvuwbyuOa6Sr5R/exec',
         telegramToken: localStorage.getItem('hub_telegram_token') || ''
@@ -96,10 +97,11 @@ function initShopping() {
             if (e.key === 'Enter') btnAddItem.click();
         });
 
-        // Populate Datalist with seed products
+        // Populate Datalist with seed products and custom products
         const datalist = document.getElementById('product-suggestions');
         if (datalist && datalist.children.length === 0) {
-            seedProducts.forEach(prod => {
+            const allProducts = [...new Set([...seedProducts, ...(state.customProducts || [])])];
+            allProducts.forEach(prod => {
                 const option = document.createElement('option');
                 option.value = prod;
                 datalist.appendChild(option);
@@ -149,13 +151,28 @@ function addItemToShoppingList(text) {
     const items = text.split(/\s*,\s*|\s+i\s+/i).filter(t => t.trim() !== "");
 
     items.forEach(itemText => {
+        const itemName = itemText.trim();
         const newItem = {
             id: Date.now() + Math.random(), // Add random for bulk adds
-            text: itemText.trim(),
+            text: itemName,
             completed: false,
             timestamp: new Date().toISOString()
         };
         state.shoppingList.unshift(newItem);
+
+        // Dynamically learn new product
+        if (!seedProducts.some(p => p.toLowerCase() === itemName.toLowerCase()) &&
+            (!state.customProducts || !state.customProducts.some(p => p.toLowerCase() === itemName.toLowerCase()))) {
+            if (!state.customProducts) state.customProducts = [];
+            state.customProducts.push(itemName);
+
+            const datalist = document.getElementById('product-suggestions');
+            if (datalist) {
+                const option = document.createElement('option');
+                option.value = itemName;
+                datalist.appendChild(option);
+            }
+        }
     });
 
     saveLocalData();
@@ -215,6 +232,7 @@ function loadLocalData() {
         state.shoppingList = parsed.shoppingList || [];
         state.expenses = parsed.expenses || parsed.bills || [];
         state.recipes = parsed.recipes || [];
+        state.customProducts = parsed.customProducts || [];
     }
 }
 
