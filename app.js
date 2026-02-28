@@ -351,7 +351,16 @@ function addExpense(expense) {
     state.expenses.unshift(expense);
     saveLocalData();
     renderExpenses();
-    syncWithBackend('addExpense', expense);
+    syncWithBackend('updateExpenses', state.expenses);
+}
+
+// Format numbers specifically for Excel (e.g. 1.234,56 as string)
+function formatForExcel(num) {
+    return new Intl.NumberFormat('hr-HR', {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2,
+        useGrouping: true
+    }).format(num);
 }
 
 function renderExpenses() {
@@ -396,6 +405,7 @@ window.deleteExpense = (id) => {
         state.expenses = state.expenses.filter(e => e.id != id);
         saveLocalData();
         renderExpenses();
+        syncWithBackend('updateExpenses', state.expenses);
     }
 };
 
@@ -418,6 +428,7 @@ window.editExpense = (id) => {
             ex.description = newDesc.trim();
             saveLocalData();
             renderExpenses();
+            syncWithBackend('updateExpenses', state.expenses);
         } else {
             alert("Neispravan iznos!");
         }
