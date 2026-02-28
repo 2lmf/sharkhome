@@ -49,7 +49,7 @@ document.addEventListener('DOMContentLoaded', () => {
     renderRecipes();
 
     // Show version in console for debugging
-    console.log("SharkHome v1.7 Loaded");
+    console.log("SharkHome v1.8 Loaded");
 });
 
 // Tab Navigation
@@ -423,17 +423,46 @@ function initAnalytics() {
             maintainAspectRatio: false,
             plugins: {
                 legend: {
-                    display: false
+                    display: true,
+                    position: 'bottom',
+                    labels: {
+                        color: 'white',
+                        font: { family: 'Orbitron', size: 10 },
+                        padding: 15,
+                        generateLabels: (chart) => {
+                            const data = chart.data;
+                            if (data.labels.length && data.datasets.length) {
+                                return data.labels.map((label, i) => {
+                                    const meta = chart.getDatasetMeta(0);
+                                    const style = meta.controller.getStyle(i);
+                                    const value = data.datasets[0].data[i];
+                                    const total = data.datasets[0].data.reduce((a, b) => a + b, 0);
+                                    const pct = total > 0 ? Math.round((value / total) * 100) : 0;
+                                    return {
+                                        text: `${label} (${pct}%)`,
+                                        fillStyle: style.backgroundColor,
+                                        strokeStyle: style.borderColor,
+                                        lineWidth: style.borderWidth,
+                                        hidden: chart.getDatasetMeta(0).data[i].hidden,
+                                        index: i
+                                    };
+                                });
+                            }
+                            return [];
+                        }
+                    }
                 },
                 tooltip: {
                     callbacks: {
                         label: function (context) {
-                            return ` ${context.label}: ${formatHRNumber(context.raw)}`;
+                            const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                            const pct = total > 0 ? Math.round((context.raw / total) * 100) : 0;
+                            return ` ${context.label}: ${formatHRNumber(context.raw)} (${pct}%)`;
                         }
                     }
                 }
             },
-            cutout: '70%'
+            cutout: '65%'
         }
     });
 
@@ -474,22 +503,21 @@ function renderAnalytics() {
                 <span class="total-label">UKUPNO MJESEČNO</span>
                 <span class="total-amount">${formatHRNumber(totalSum)}</span>
             </div>
-            ${labels.map((cat, i) => {
+            <div class="breakdown-grid">
+                ${labels.map((cat, i) => {
             const percentage = totalSum > 0 ? Math.round((totals[cat] / totalSum) * 100) : 0;
             const color = expenseChart.data.datasets[0].backgroundColor[i % 9];
             return `
-                <div class="breakdown-item">
-                    <div class="breakdown-info">
-                        <span class="breakdown-color" style="background:${color}"></span>
-                        <span class="breakdown-name">${cat}</span>
+                    <div class="breakdown-item" style="border-left: 3px solid ${color};">
+                        <div class="breakdown-info">
+                            <span class="breakdown-name" style="color:${color}">${cat}</span>
+                            <span class="breakdown-val" style="color:${color}">${formatHRNumber(totals[cat])}</span>
+                        </div>
+                        <span class="breakdown-pct" style="color:rgba(255,255,255,0.5)">${percentage}%</span>
                     </div>
-                    <div class="breakdown-values">
-                        <span class="breakdown-val">${formatHRNumber(totals[cat])}</span>
-                        <span class="breakdown-pct">${percentage}%</span>
-                    </div>
-                </div>
-                `;
+                    `;
         }).join('')}
+            </div>
         `;
     }
 }

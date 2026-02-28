@@ -819,33 +819,102 @@ input[type="text"]:focus {
     font-family: 'Outfit', sans-serif;
 }
 
-/* Analytics */
+/* Analytics Styles Enhancement */
 .chart-container {
-    background: var(--card-bg);
+    height: 280px;
+    position: relative;
+    margin-bottom: 25px;
+    padding: 10px;
+}
+
+.total-spend-card {
+    background: linear-gradient(135deg, var(--card-bg), rgba(230, 126, 34, 0.15));
     border: 1px solid var(--glass-border);
-    border-radius: 20px;
-    padding: 1.5rem;
-    margin-bottom: 2rem;
-    max-height: 300px;
+    border-radius: 15px;
+    padding: 15px;
+    text-align: center;
+    margin-bottom: 20px;
     display: flex;
-    justify-content: center;
+    flex-direction: column;
+    gap: 4px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
 }
 
-.category-item {
-    display: flex;
-    justify-content: space-between;
-    padding: 1rem;
-    border-bottom: 1px solid var(--glass-border);
+.total-label {
+    font-size: 0.65rem;
+    color: var(--text-dim);
+    letter-spacing: 2px;
+    text-transform: uppercase;
 }
 
-.category-name {
-    font-weight: 600;
+.total-amount {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 1.6rem;
+    font-weight: 900;
     color: var(--accent);
 }
 
-.category-amount {
-    font-family: 'Orbitron', sans-serif;
+.breakdown-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 15px;
+    position: relative;
 }
+
+/* Vertical line separator */
+.breakdown-grid::after {
+    content: '';
+    position: absolute;
+    left: 50%;
+    top: 5px;
+    bottom: 5px;
+    width: 1px;
+    background: rgba(255, 255, 255, 0.08);
+}
+
+.breakdown-item {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    padding: 10px 12px;
+    background: rgba(255, 255, 255, 0.02);
+    border: 1px solid var(--glass-border);
+    border-radius: 10px;
+    margin-bottom: 5px;
+    transition: transform 0.2s;
+}
+
+.breakdown-item:hover {
+    transform: scale(1.02);
+    background: rgba(255, 255, 255, 0.05);
+}
+
+.breakdown-info {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.breakdown-name {
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.breakdown-val {
+    font-family: 'Orbitron', sans-serif;
+    font-weight: 700;
+    font-size: 0.95rem;
+}
+
+.breakdown-pct {
+    font-size: 0.7rem;
+    font-weight: 600;
+    margin-top: 4px;
+    opacity: 0.8;
+}
+
 
 /* Category select in modal/view */
 .category-pill {
