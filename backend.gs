@@ -1,12 +1,11 @@
 /**
- * SharkHome Backend - Google Apps Script
+ * SharkHome Backend - Google Apps Script (v1.5)
  * Deploy as Web App: "Execute as: Me", "Who has access: Anyone"
  */
 
 const SHEET_ID = '1JfZVUq_mM1RBvmuorpDhjUtF5-ltvcgAM1Af8Lm1OuU';
 
 function doGet(e) {
-  // If 'e' is missing (manual run), show a friendly message
   if (!e || !e.parameter) {
     return ContentService.createTextOutput("SharkHome API is active. Test this via the app!")
       .setMimeType(ContentService.MimeType.TEXT);
@@ -38,8 +37,8 @@ function doPost(e) {
     return createResponse({ status: 'success' });
   }
 
-  if (action === 'addExpense') {
-    appendRow(sheet, 'Expenses', body.data);
+  if (action === 'updateExpenses') {
+    updateSheet(sheet, 'Expenses', body.data);
     return createResponse({ status: 'success' });
   }
 
@@ -64,51 +63,35 @@ function updateSheet(ss, sheetName, dataList) {
   const sheet = ss.getSheetByName(sheetName) || ss.insertSheet(sheetName);
   sheet.clear();
   
-  if (dataList.length === 0) {
-    sheet.appendRow(['id', 'text', 'completed', 'timestamp']);
-    return;
-  }
-  
-  const headers = Object.keys(dataList[0]);
+  let headers = (sheetName === 'Expenses') 
+    ? ['id', 'category', 'amount', 'description', 'date'] 
+    : ['id', 'text', 'completed', 'timestamp'];
+
   sheet.appendRow(headers);
+  if (dataList.length === 0) return;
+  
   dataList.forEach(item => {
-    sheet.appendRow(headers.map(h => item[h]));
+    const row = headers.map(h => {
+      let val = item[h];
+      
+      // Robust number formatting for Excel (1.234,50) - avoiding Intl.NumberFormat
+      if (h === 'amount' && typeof val === 'number') {
+        var parts = val.toFixed(2).split(".");
+        parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+        return parts.join(",");
+      }
+      
+      // Format ISO dates to readable Croatian format
+      if (typeof val === 'string' && val.includes('T') && val.includes('Z')) {
+        try {
+            return Utilities.formatDate(new Date(val), "GMT+1", "dd.MM.yyyy. HH:mm");
+        } catch(e) { return val; }
+      }
+      
+      return val;
+    });
+    sheet.appendRow(row);
   });
-}
-
-function appendRow(ss, sheetName, data) {
-  const sheet = ss.getSheetByName(sheetName) || ss.insertSheet(sheetName);
-  
-  // Define fixed headers for specific sheets to ensure column consistency
-  let headers = [];
-  if (sheetName === 'Expenses') {
-    headers = ['id', 'category', 'amount', 'date', 'description'];
-  } else {
-    headers = Object.keys(data);
-  }
-
-  // Format amount for Expenses
-  if (sheetName === 'Expenses' && typeof data.amount === 'number') {
-    // Format: 1.234,56
-    let parts = data.amount.toFixed(2).split('.');
-    parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ".");
-    data.amount = parts.join(',');
-  }
-  
-  // Format dates in data
-  for (let key in data) {
-    if (data[key] instanceof Date || (typeof data[key] === 'string' && data[key].includes('T') && data[key].includes('Z'))) {
-      data[key] = Utilities.formatDate(new Date(data[key]), "GMT+1", "dd.MM.yyyy. HH:mm");
-    }
-  }
-
-  if (sheet.getLastRow() === 0) {
-    sheet.appendRow(headers);
-  }
-  
-  // Map data to headers
-  const row = headers.map(h => data[h] !== undefined ? data[h] : "");
-  sheet.appendRow(row);
 }
 
 function createResponse(data) {
@@ -116,11 +99,11 @@ function createResponse(data) {
     .setMimeType(ContentService.MimeType.JSON);
 }
 
-// Možeš pokrenuti ovu funkciju (klikni RUN) da provjeriš radi li veza sa Sheetom
+// Test function
 function testMe() {
   const ss = SpreadsheetApp.openById(SHEET_ID);
   const sheet = ss.getSheetByName('Test');
   if (!sheet) ss.insertSheet('Test');
   ss.getSheetByName('Test').appendRow(['Uspješno povezano!', new Date().toISOString()]);
-  Logger.log('Veza radi! Pogledaj u svoj Google Sheet, stvoren je tab "Test".');
+  Logger.log('Veza radi!');
 }
