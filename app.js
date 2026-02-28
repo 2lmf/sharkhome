@@ -156,8 +156,24 @@ function initVoice() {
 
 function addItemToShoppingList(text) {
     console.log("Splitting input:", text);
+
+    // Voice Dictation Auto-Correct Dictionary
+    let correctedText = text;
+    const dictionary = {
+        "mljeko": "mlijeko",
+        "mljeka": "mlijeka",
+        "čevapi": "ćevapi",
+        "kruč": "kruh"
+    };
+
+    // Apply corrections (case insensitive word boundary replacement)
+    for (const [wrong, right] of Object.entries(dictionary)) {
+        const regex = new RegExp(`\\b${wrong}\\b`, 'gi');
+        correctedText = correctedText.replace(regex, right);
+    }
+
     // Split by comma or the word "i" (case-insensitive)
-    const items = text.split(/\s*,\s*|\s+i\s+/i).filter(t => t.trim() !== "");
+    const items = correctedText.split(/\s*,\s*|\s+i\s+/i).filter(t => t.trim() !== "");
 
     items.forEach(itemText => {
         const itemName = itemText.trim();
@@ -240,10 +256,13 @@ function loadLocalData() {
         const parsed = JSON.parse(saved);
         state.shoppingList = parsed.shoppingList || [];
 
-        let loadedExpenses = parsed.expenses || [];
-        if (loadedExpenses.length === 0 && parsed.bills && parsed.bills.length > 0) {
-            // Migrate legacy bills array to the new expenses array to preserve history
+        let loadedExpenses = [];
+        if (parsed.expenses && parsed.expenses.length > 0) {
+            loadedExpenses = parsed.expenses;
+        } else if (parsed.bills && parsed.bills.length > 0) {
             loadedExpenses = parsed.bills;
+        } else {
+            loadedExpenses = [];
         }
 
         state.expenses = loadedExpenses;
