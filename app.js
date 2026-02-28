@@ -26,6 +26,7 @@ document.addEventListener('DOMContentLoaded', () => {
     initShopping();
     initScanner();
     initAnalytics(); // For Chart.js
+    initBills();
 
     // Load local state first for immediate feel
     loadLocalData();
@@ -55,6 +56,9 @@ function switchTab(tabId) {
     views.forEach(view => {
         view.classList.toggle('active', view.id === `view-${tabId}`);
     });
+
+    if (tabId === 'stats') renderAnalytics();
+    if (tabId === 'bills') renderExpenses();
 }
 
 // Shopping Logic
@@ -175,46 +179,80 @@ function loadLocalData() {
     }
 }
 
-// Scanner Logic
-function initScanner() {
-    const btnScanProduct = document.getElementById('btn-scan-product');
-    const btnScanBill = document.getElementById('btn-scan-bill');
-    const overlay = document.getElementById('scanner-overlay');
-    const btnClose = document.getElementById('btn-close-scanner');
-
-    let html5QrCode;
-
-    const startScanner = (mode) => {
-        overlay.classList.remove('hidden');
-        html5QrCode = new Html5Qrcode("reader");
-
-        const config = { fps: 10, qrbox: { width: 250, height: 250 } };
-
-        html5QrCode.start(
-            { facingMode: "environment" },
-            config,
-            (decodedText) => {
-                handleScanResult(decodedText, mode);
-                stopScanner();
-            }
-        ).catch(err => {
-            showToast("Greška s kamerom: " + err, "error");
-            stopScanner();
+function initBills() {
+    const catBtns = document.querySelectorAll('.cat-btn[data-cat]');
+    catBtns.forEach(btn => {
+        btn.addEventListener('click', () => {
+            promptForExpense(btn.dataset.cat);
         });
-    };
+    });
 
-    const stopScanner = () => {
-        if (html5QrCode) {
-            html5QrCode.stop().then(() => {
-                overlay.classList.add('hidden');
-            });
-        }
-    };
-
-    btnScanProduct.addEventListener('click', () => startScanner('product'));
-    btnScanBill.addEventListener('click', () => startScanner('bill'));
-    btnClose.addEventListener('click', stopScanner);
+    document.getElementById('btn-add-expense').addEventListener('click', () => {
+        promptForExpense('Ostalo');
+    });
 }
+
+function promptForExpense(category) {
+    const amount = prompt(`Unesi iznos za: ${category}`, "0.00");
+    if (amount !== null && !isNaN(parseFloat(amount.replace(',', '.')))) {
+        addExpense({
+            id: Date.now(),
+            category: category,
+            amount: amount,
+            date: new Date().toISOString()
+        });
+    }
+}
+
+function addExpense(expense) {
+    state.expenses.unshift(expense);
+    saveLocalData();
+    renderExpenses();
+    syncWithBackend('addExpense', expense);
+}
+
+function renderExpenses() {
+    const container = document.getElementById('expenses-list');
+    if (!container) return;
+
+    if (state.expenses.length === 0) {
+        container.innerHTML = `<div class="empty-state">Nema zapisa.</div>`;
+        return;
+    }
+
+    container.innerHTML = state.expenses.map(ex => `
+        <div class="expense-item" onclick="editExpense('${ex.id}')">
+            <div class="expense-meta">
+                <span class="expense-cat">${ex.category}</span>
+                <span class="expense-date">${formatCroatianDate(ex.date)}</span>
+            </div>
+            <div class="expense-val">${ex.amount} €</div>
+        </div>
+    `).join('');
+}
+
+function formatCroatianDate(iso) {
+    const d = new Date(iso);
+    return d.toLocaleDateString('hr-HR') + ' ' + d.toLocaleTimeString('hr-HR', { hour: '2-digit', minute: '2-digit' });
+}
+
+window.editExpense = (id) => {
+    const ex = state.expenses.find(e => e.id == id);
+    if (!ex) return;
+
+    const newAmount = prompt(`Uredi iznos za ${ex.category} (${formatCroatianDate(ex.date)}):`, ex.amount);
+    if (newAmount !== null) {
+        ex.amount = newAmount;
+        saveLocalData();
+        renderExpenses();
+        // Since we cleared and updated in GAS with syncWithBackend for shopping, 
+        // for Expenses we might need a separate 'updateExpenses' but for now 
+        // we append. Ideally we'd have update.
+    }
+}
+
+// Global scope for onclick
+window.addItemToShoppingList = addItemToShoppingList;
 
 function handleScanResult(text, mode) {
     if (mode === 'bill') {
