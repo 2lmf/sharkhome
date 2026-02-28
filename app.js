@@ -43,10 +43,24 @@ function initTabs() {
     });
 }
 
+const seedProducts = [
+    "Kruh", "Mlijeko", "Jaja", "Maslac", "Ulje", "Brašno", "Šećer", "Sol", "Papar", "Riža",
+    "Tjestenina", "Krumpir", "Luk", "Češnjak", "Rajčica", "Paprika", "Krastavci", "Zelena salata", "Jabuke", "Banane",
+    "Naranče", "Limun", "Mrkva", "Piletina", "Mljeveno meso", "Svinjetina", "Riba", "Tuna", "Sir", "Svježi sir",
+    "Vrhnje za kuhanje", "Kiselo vrhnje", "Jogurt", "Kefir", "Čokolada", "Keksi", "Kava", "Čaj", "Sok", "Pivo",
+    "Vino", "Mineralna voda", "Toaletni papir", "Papirnati ručnici", "Deterdžent za suđe", "Deterdžent za rublje", "Omekšivač", "Sapun", "Šampon", "Pasta za zube",
+    "Četkica za zube", "Vlažne maramice", "Dezodorans", "Gel za tuširanje", "Vrećice za smeće", "Spužvice", "Aluminijska folija", "Papir za pečenje", "Pršut", "Šunka",
+    "Panceta", "Hrenovke", "Kobasice", "Pašteta", "Majoneza", "Ketchup", "Senf", "Ocat", "Maslinovo ulje", "Grah",
+    "Kukuruz", "Pelati", "Pasirana rajčica", "Gljive", "Vrhnje za šlag", "Puding", "Kocka za juhu", "Griz", "Zobene pahuljice", "Muesli",
+    "Med", "Marmelada", "Lino Lada", "Nutella", "Smrznuti grašak", "Smrznuti špinat", "Sladoled", "Kvasac", "Prašak za pecivo",
+    "Vanilin šećer", "Vegeta", "Ljuta paprika", "Slatka paprika", "Origano", "Bosiljak", "Čips", "Smoki", "Štapići", "Kikiriki"
+];
+
 function switchTab(tabId) {
     state.currentTab = tabId;
 
     // Update Buttons
+    const tabBtns = document.querySelectorAll('.tab-btn');
     tabBtns.forEach(btn => {
         btn.classList.toggle('active', btn.dataset.tab === tabId);
     });
@@ -81,6 +95,16 @@ function initShopping() {
         inputNewItem.addEventListener('keypress', (e) => {
             if (e.key === 'Enter') btnAddItem.click();
         });
+
+        // Populate Datalist with seed products
+        const datalist = document.getElementById('product-suggestions');
+        if (datalist && datalist.children.length === 0) {
+            seedProducts.forEach(prod => {
+                const option = document.createElement('option');
+                option.value = prod;
+                datalist.appendChild(option);
+            });
+        }
     }
 
     initVoice();
