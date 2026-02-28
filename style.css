@@ -191,8 +191,8 @@ input[type="text"]:focus {
 /* Category Grid */
 .category-grid {
     display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 10px;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
     margin-bottom: 2rem;
 }
 
@@ -203,14 +203,14 @@ input[type="text"]:focus {
     justify-content: center;
     background: var(--card-bg);
     border: 1px solid var(--glass-border);
-    border-radius: 12px;
-    padding: 10px 5px;
-    font-size: 0.75rem;
+    border-radius: 16px;
+    padding: 15px 10px;
+    font-size: 0.85rem;
     color: var(--text-main);
-    /* Changed from var(--text-color) to var(--text-main) */
     text-transform: uppercase;
-    font-weight: 600;
+    font-weight: 700;
     transition: all 0.2s;
+    min-height: 80px;
 }
 
 .cat-btn:hover {

@@ -112,14 +112,19 @@ function initVoice() {
 }
 
 function addItemToShoppingList(text) {
-    const newItem = {
-        id: Date.now(),
-        text: text,
-        completed: false,
-        timestamp: new Date().toISOString()
-    };
+    // Split by comma or word " i " (and) to allow multiple items at once
+    const items = text.split(/, |,| i /).filter(t => t.trim() !== "");
 
-    state.shoppingList.unshift(newItem);
+    items.forEach(itemText => {
+        const newItem = {
+            id: Date.now() + Math.random(), // Add random for bulk adds
+            text: itemText.trim(),
+            completed: false,
+            timestamp: new Date().toISOString()
+        };
+        state.shoppingList.unshift(newItem);
+    });
+
     saveLocalData();
     renderShoppingList();
 
