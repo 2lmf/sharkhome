@@ -239,7 +239,14 @@ function loadLocalData() {
     if (saved) {
         const parsed = JSON.parse(saved);
         state.shoppingList = parsed.shoppingList || [];
-        state.expenses = parsed.expenses || parsed.bills || [];
+
+        let loadedExpenses = parsed.expenses || [];
+        if (loadedExpenses.length === 0 && parsed.bills && parsed.bills.length > 0) {
+            // Migrate legacy bills array to the new expenses array to preserve history
+            loadedExpenses = parsed.bills;
+        }
+
+        state.expenses = loadedExpenses;
         state.recipes = parsed.recipes || [];
         state.customProducts = parsed.customProducts || [];
     }
