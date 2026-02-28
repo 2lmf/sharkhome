@@ -5,8 +5,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>SharkHome</title>
-    <link rel="stylesheet" href="style.css?v=1.1">
-    <link rel="manifest" href="manifest.json?v=1.1">
+    <link rel="stylesheet" href="style.css?v=1.2">
+    <link rel="manifest" href="manifest.json?v=1.2">
     <meta name="theme-color" content="#010103">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -104,7 +104,8 @@
                 <div class="expense-amount-action-row">
                     <div class="amount-row">
                         <span class="currency-symbol">€</span>
-                        <input type="text" id="input-expense-amount" placeholder="0.00" inputmode="decimal">
+                        <input type="number" id="input-expense-amount" placeholder="0.00" step="0.01"
+                            inputmode="decimal">
                     </div>
                     <button id="btn-save-expense" class="btn-confirm-upiši">UPIŠI</button>
                 </div>
@@ -182,7 +183,7 @@
 
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://unpkg.com/html5-qrcode"></script>
-    <script src="app.js?v=1.1"></script>
+    <script src="app.js?v=1.2"></script>
 </body>
 
 </html>

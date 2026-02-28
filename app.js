@@ -294,12 +294,7 @@ function initBills() {
     if (btnSave && inputAmount) {
         btnSave.addEventListener('click', () => {
             console.log("UPIŠI clicked! Raw:", inputAmount.value, "Desc:", inputDesc ? inputDesc.value : 'null');
-            // Clean up Croatian input: remove thousands dots, replace decimal comma with dot
-            let rawStr = inputAmount.value.trim();
-            rawStr = rawStr.replace(/\./g, ''); // Remove all dots (thousands)
-            rawStr = rawStr.replace(',', '.');  // Replace the decimal comma with a dot
-
-            const amount = parseFloat(rawStr);
+            const amount = parseFloat(inputAmount.value);
             const desc = inputDesc ? inputDesc.value.trim() : "";
             console.log("Parsed Amount:", amount);
 
