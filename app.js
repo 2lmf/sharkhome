@@ -9,8 +9,7 @@ const state = {
     recipes: [],
     customProducts: [],
     config: {
-        apiUrl: localStorage.getItem('shark_api_url') || 'https://script.google.com/macros/s/AKfycbyQmtsILzYGXAPvPBFU5tvEObBnns3AFD4H9DLj20aYWXv7I_zJ3wpvuwbyuOa6Sr5R/exec',
-        telegramToken: localStorage.getItem('hub_telegram_token') || ''
+        apiUrl: localStorage.getItem('shark_api_url') || 'https://script.google.com/macros/s/AKfycbyQmtsILzYGXAPvPBFU5tvEObBnns3AFD4H9DLj20aYWXv7I_zJ3wpvuwbyuOa6Sr5R/exec'
     }
 };
 
@@ -52,7 +51,7 @@ document.addEventListener('DOMContentLoaded', () => {
     fetchCloudData();
 
     // Show version in console for debugging
-    console.log("SharkHome v2.0 Loaded");
+    console.log("SharkHome v2.1 Loaded");
 });
 
 // Tab Navigation

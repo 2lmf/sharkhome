@@ -92,12 +92,56 @@ function updateSheet(ss, sheetName, dataList) {
     });
     sheet.appendRow(row);
   });
+
+  // v2.1: Track changes for email notifications
+  if (sheetName === 'ShoppingList' && dataList.length > 0) {
+    PropertiesService.getScriptProperties().setProperty('LAST_CHANGE', new Date().getTime().toString());
+  }
 }
 
+/**
+ * Hourly Trigger Function: Checks if Shopping List changed and sends email
+ * Set this up in Apps Script Triggers (Time-driven -> Hourly)
+ */
+function checkAndNotifyShoppingList() {
+  const props = PropertiesService.getScriptProperties();
+  const lastChange = props.getProperty('LAST_CHANGE') || "0";
+  const lastNotified = props.getProperty('LAST_NOTIFIED') || "0";
+
+  if (parseInt(lastChange) > parseInt(lastNotified)) {
+    const sheet = SpreadsheetApp.openById(SHEET_ID).getSheetByName('ShoppingList');
+    const data = getSheetData(SpreadsheetApp.openById(SHEET_ID), 'ShoppingList');
+    
+    if (data.length === 0) return;
+
+    // Filter only uncompleted items for a cleaner mail
+    const items = data.filter(item => !item.completed).map(item => "- " + item.text).join("\n");
+    
+    if (items === "") return;
+
+    const subject = "Novi upis u popis za dućan 🛒";
+    const body = "Pozdrav,\n\nImaš nove stavke na popisu za dućan:\n\n" + items + "\n\nSretna kupnja!\nSharkHome";
+    
+    const recipients = "fantoni64@gmail.com, anic.josipa@gmail.com";
+    
+    MailApp.sendEmail(recipients, subject, body);
+    
+    // Update notified timestamp
+    props.setProperty('LAST_NOTIFIED', lastChange);
+    Logger.log("Email sent to: " + recipients);
+  } else {
+    Logger.log("No new changes since last check.");
+  }
+}
+
+/**
+ * Pomoćna funkcija za JSON odgovor
+ */
 function createResponse(data) {
   return ContentService.createTextOutput(JSON.stringify(data))
     .setMimeType(ContentService.MimeType.JSON);
 }
+
 
 // Test function
 function testMe() {
