@@ -53,18 +53,18 @@
                 <h2>Popis za dućan</h2>
             </div>
 
-            <!-- Row 1: text input -->
+            <!-- Row 1: text input (Full Width) -->
             <div class="shop-input-row">
                 <input type="text" id="input-new-item" placeholder="Upiši stavku..." list="product-suggestions"
                     autocomplete="off">
                 <datalist id="product-suggestions"></datalist>
             </div>
 
-            <!-- Row 2: action buttons -->
+            <!-- Row 2: action buttons (Equal Sized) -->
             <div class="shop-actions-row">
-                <button id="btn-voice" class="shop-action-btn">
+                <button id="btn-voice" class="shop-action-btn btn-voice-rec">
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                        stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="22" height="22">
+                        stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="18" height="18">
                         <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z" />
                         <path d="M19 10v2a7 7 0 0 1-14 0v-2" />
                         <line x1="12" y1="19" x2="12" y2="23" />
@@ -72,7 +72,7 @@
                     </svg>
                     GLAS
                 </button>
-                <button id="btn-add-item" class="shop-action-btn shop-action-add">+ DODAJ</button>
+                <button id="btn-add-item" class="shop-action-btn btn-confirm-add">+ DODAJ</button>
             </div>
 
             <div id="shopping-list-container" class="scroll-area">
@@ -97,9 +97,12 @@
                 <button class="cat-btn" data-cat="Ostalo">❓ ostalo</button>
             </div>
 
-            <div class="expense-entry">
-                <input type="number" id="input-expense-amount" placeholder="0.00" step="0.01">
-                <button id="btn-save-expense">UPIŠI</button>
+            <div class="expense-entry-container">
+                <div class="amount-row">
+                    <span class="currency-symbol">€</span>
+                    <input type="number" id="input-expense-amount" placeholder="0.00" step="0.01" inputmode="decimal">
+                </div>
+                <button id="btn-save-expense" class="btn-confirm-upiši">UPIŠI</button>
             </div>
 
             <div class="list-title">Kronološki zapisi</div>

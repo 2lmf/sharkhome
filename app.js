@@ -13,12 +13,10 @@ const state = {
     }
 };
 
-// UI Elements
-const views = document.querySelectorAll('.tab-view');
-const tabBtns = document.querySelectorAll('.tab-btn');
-const shoppingListContainer = document.getElementById('shopping-list-container');
-const inputNewItem = document.getElementById('input-new-item');
-const btnAddItem = document.getElementById('btn-add-item');
+// UI Elements (Initialized in init functions)
+let shoppingListContainer;
+let inputNewItem;
+let btnAddItem;
 
 // Initialization
 document.addEventListener('DOMContentLoaded', () => {
@@ -36,6 +34,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
 // Tab Navigation
 function initTabs() {
+    const tabBtns = document.querySelectorAll('.tab-btn');
     tabBtns.forEach(btn => {
         btn.addEventListener('click', () => {
             const target = btn.dataset.tab;
@@ -53,6 +52,7 @@ function switchTab(tabId) {
     });
 
     // Update Views
+    const views = document.querySelectorAll('.tab-view');
     views.forEach(view => {
         view.classList.toggle('active', view.id === `view-${tabId}`);
     });
@@ -63,17 +63,25 @@ function switchTab(tabId) {
 
 // Shopping Logic
 function initShopping() {
-    btnAddItem.addEventListener('click', () => {
-        const value = inputNewItem.value.trim();
-        if (value) {
-            addItemToShoppingList(value);
-            inputNewItem.value = '';
-        }
-    });
+    shoppingListContainer = document.getElementById('shopping-list-container');
+    inputNewItem = document.getElementById('input-new-item');
+    btnAddItem = document.getElementById('btn-add-item');
 
-    inputNewItem.addEventListener('keypress', (e) => {
-        if (e.key === 'Enter') btnAddItem.click();
-    });
+    if (btnAddItem) {
+        btnAddItem.addEventListener('click', () => {
+            const value = inputNewItem.value.trim();
+            if (value) {
+                addItemToShoppingList(value);
+                inputNewItem.value = '';
+            }
+        });
+    }
+
+    if (inputNewItem) {
+        inputNewItem.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') btnAddItem.click();
+        });
+    }
 
     initVoice();
 }
@@ -204,28 +212,31 @@ function initBills() {
     const btnSave = document.getElementById('btn-save-expense');
     const inputAmount = document.getElementById('input-expense-amount');
 
-    btnSave.addEventListener('click', () => {
-        const value = inputAmount.value;
-        const amount = parseFloat(value);
+    if (btnSave && inputAmount) {
+        btnSave.addEventListener('click', () => {
+            console.log("UPIŠI clicked!"); // Debug log
+            const rawValue = inputAmount.value.replace(',', '.'); // Handle comma decimal separator
+            const amount = parseFloat(rawValue);
 
-        if (!isNaN(amount) && amount > 0) {
-            addExpense({
-                id: Date.now(),
-                category: selectedCategory,
-                amount: amount.toFixed(2),
-                date: new Date().toISOString()
-            });
-            inputAmount.value = '';
-            showToast(`${selectedCategory}: ${amount.toFixed(2)} € upisano!`, 'success');
-        } else {
-            showToast("Prvo upiši brojku!", "error");
-        }
-    });
+            if (!isNaN(amount) && amount > 0) {
+                addExpense({
+                    id: Date.now(),
+                    category: selectedCategory,
+                    amount: amount.toFixed(2),
+                    date: new Date().toISOString()
+                });
+                inputAmount.value = '';
+                showToast(`${selectedCategory}: ${amount.toFixed(2)} € upisano!`, 'success');
+            } else {
+                showToast("Prvo upiši brojku!", "error");
+            }
+        });
 
-    // Enter key support
-    inputAmount.addEventListener('keypress', (e) => {
-        if (e.key === 'Enter') btnSave.click();
-    });
+        // Enter key support
+        inputAmount.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') btnSave.click();
+        });
+    }
 }
 
 function addExpense(expense) {
