@@ -170,7 +170,7 @@ function loadLocalData() {
     if (saved) {
         const parsed = JSON.parse(saved);
         state.shoppingList = parsed.shoppingList || [];
-        state.bills = parsed.bills || [];
+        state.expenses = parsed.expenses || parsed.bills || [];
         state.recipes = parsed.recipes || [];
     }
 }
@@ -267,19 +267,18 @@ async function syncWithBackend(action, data = null) {
     try {
         const options = {
             method: 'POST',
-            mode: 'no-cors', // Apps Script requires no-cors sometimes or handles redirects
+            mode: 'no-cors',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ action, data })
         };
 
-        // Note: Apps Script POST with no-cors doesn't return body, 
-        // we'll use a hybrid approach or just trust the send for now.
+        // Note: fetch with no-cors always returns opaque response (status 0)
         await fetch(state.config.apiUrl, options);
 
-        showToast("Sinkronizirano!", "success");
+        showToast("Zahtjev poslan!", "success");
     } catch (err) {
         console.error("Sync error:", err);
-        showToast("Greška pri sinkronizaciji.", "error");
+        showToast("Mrežna greška.", "error");
     } finally {
         syncStatus.className = 'sync-idle';
     }
