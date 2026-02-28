@@ -487,6 +487,130 @@ input[type="text"]:focus {
     border-color: var(--accent);
 }
 
+/* Recipes UI */
+.recipe-form-container {
+    background: rgba(255, 255, 255, 0.02);
+    border: 1px solid var(--accent);
+    border-radius: 20px;
+    padding: 1.2rem;
+    margin-bottom: 2rem;
+    animation: slideIn 0.3s ease-out;
+}
+
+.recipe-form-container.hidden {
+    display: none;
+}
+
+.recipe-name-input {
+    width: 100%;
+    background: transparent;
+    border: none;
+    border-bottom: 2px solid var(--glass-border);
+    color: var(--accent);
+    font-family: 'Orbitron', sans-serif;
+    font-size: 1.4rem;
+    font-weight: 700;
+    padding: 0.5rem 0;
+    outline: none;
+    transition: all 0.3s;
+}
+
+.recipe-name-input:focus {
+    border-bottom-color: var(--accent);
+}
+
+.draft-list {
+    margin-top: 10px;
+    margin-bottom: 15px;
+}
+
+.draft-item {
+    font-family: 'Outfit', sans-serif;
+    color: var(--text-dim);
+    font-size: 0.9rem;
+    padding: 4px 0;
+    display: flex;
+    justify-content: space-between;
+}
+
+.recipe-card {
+    background: var(--card-bg);
+    border: 1px solid var(--glass-border);
+    border-radius: 20px;
+    padding: 1.5rem;
+    margin-bottom: 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.recipe-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.recipe-card-title {
+    font-family: 'Orbitron', sans-serif;
+    color: var(--accent);
+    font-size: 1.2rem;
+    font-weight: 700;
+}
+
+.recipe-card-actions {
+    display: flex;
+    gap: 10px;
+}
+
+.recipe-icon-btn {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid var(--glass-border);
+    border-radius: 10px;
+    padding: 8px;
+    color: white;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.btn-share-wa {
+    background: rgba(37, 211, 102, 0.1);
+    color: #25D366;
+    border-color: #25D366;
+}
+
+.btn-share-wa:hover {
+    background: #25D366;
+    color: white;
+}
+
+.recipe-ingredients-list {
+    font-family: 'Outfit', sans-serif;
+    color: var(--text-main);
+    font-size: 0.95rem;
+    line-height: 1.5;
+    margin-left: 20px;
+}
+
+.recipe-add-all-btn {
+    background: rgba(230, 126, 34, 0.1);
+    border: 1px solid var(--accent);
+    border-radius: 12px;
+    color: var(--accent);
+    font-family: 'Orbitron', sans-serif;
+    font-weight: 700;
+    padding: 10px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.recipe-add-all-btn:hover {
+    background: var(--accent);
+    color: black;
+}
+
 @keyframes slideIn {
     from {
         opacity: 0;

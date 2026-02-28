@@ -15,9 +15,16 @@ const state = {
 };
 
 // UI Elements (Initialized in init functions)
+// UI Elements (Initialized in init functions)
 let shoppingListContainer;
 let inputNewItem;
 let btnAddItem;
+
+// Recipe Draft State
+let currentRecipeDraft = {
+    name: '',
+    ingredients: []
+};
 
 // Initialization
 document.addEventListener('DOMContentLoaded', () => {
@@ -26,11 +33,13 @@ document.addEventListener('DOMContentLoaded', () => {
     initScanner();
     initAnalytics(); // For Chart.js
     initBills();
+    initRecipes();
 
     // Load local state first for immediate feel
     loadLocalData();
     renderShoppingList();
     renderAnalytics();
+    renderRecipes();
 });
 
 // Tab Navigation
@@ -350,9 +359,155 @@ window.editExpense = (id) => {
         ex.amount = newAmount;
         saveLocalData();
         renderExpenses();
-        // Since we cleared and updated in GAS with syncWithBackend for shopping, 
-        // for Expenses we might need a separate 'updateExpenses' but for now 
-        // we append. Ideally we'd have update.
+    }
+}
+
+// ==========================================
+// RECIPES LOGIC
+// ==========================================
+
+function initRecipes() {
+    const btnToggle = document.getElementById('btn-toggle-recipe-form');
+    const formContainer = document.getElementById('recipe-form');
+    const inputName = document.getElementById('input-recipe-name');
+    const inputIng = document.getElementById('input-recipe-ingredient');
+    const btnAddIng = document.getElementById('btn-add-ingredient');
+    const btnSaveRecipe = document.getElementById('btn-save-recipe');
+
+    if (!btnToggle) return;
+
+    btnToggle.addEventListener('click', () => {
+        formContainer.classList.toggle('hidden');
+        if (!formContainer.classList.contains('hidden')) {
+            inputName.focus();
+        }
+    });
+
+    btnAddIng.addEventListener('click', () => {
+        const ing = inputIng.value.trim();
+        if (ing) {
+            // Split by comma or 'i' just like shopping list
+            const items = ing.split(/\s*,\s*|\s+i\s+/i).filter(t => t.trim() !== "");
+            items.forEach(item => {
+                currentRecipeDraft.ingredients.push({ id: Date.now() + Math.random(), text: item });
+            });
+            inputIng.value = '';
+            renderDraftIngredients();
+        }
+    });
+
+    inputIng.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') btnAddIng.click();
+    });
+
+    btnSaveRecipe.addEventListener('click', () => {
+        const name = inputName.value.trim();
+        if (!name) {
+            showToast("Unesi ime recepta!", "error");
+            return;
+        }
+        if (currentRecipeDraft.ingredients.length === 0) {
+            showToast("Dodaj barem jedan sastojak!", "error");
+            return;
+        }
+
+        const newRecipe = {
+            id: Date.now().toString(),
+            name: name,
+            ingredients: [...currentRecipeDraft.ingredients],
+            timestamp: new Date().toISOString()
+        };
+
+        state.recipes.unshift(newRecipe);
+        saveLocalData();
+        renderRecipes();
+        showToast("Recept spremljen!", "success");
+
+        // Reset form
+        inputName.value = '';
+        currentRecipeDraft.ingredients = [];
+        renderDraftIngredients();
+        formContainer.classList.add('hidden');
+    });
+}
+
+function renderDraftIngredients() {
+    const container = document.getElementById('draft-ingredients-list');
+    if (!container) return;
+
+    container.innerHTML = currentRecipeDraft.ingredients.map(ing => `
+        <div class="draft-item">
+            <span>• ${ing.text}</span>
+            <span onclick="removeDraftIngredient(${ing.id})" style="color:var(--accent-red); cursor:pointer;">✖</span>
+        </div>
+    `).join('');
+}
+
+window.removeDraftIngredient = (id) => {
+    currentRecipeDraft.ingredients = currentRecipeDraft.ingredients.filter(i => i.id !== id);
+    renderDraftIngredients();
+}
+
+function renderRecipes() {
+    const grid = document.getElementById('recipes-grid');
+    if (!grid) return;
+
+    if (state.recipes.length === 0) {
+        grid.innerHTML = `<div class="empty-state">Ovdje će biti tvoji recepti.</div>`;
+        return;
+    }
+
+    grid.innerHTML = state.recipes.map(recipe => {
+        const ingList = recipe.ingredients.map(i => `<li>${i.text}</li>`).join('');
+        const shareText = encodeURIComponent(`Novi recept: *${recipe.name}*\nSastojci:\n${recipe.ingredients.map(i => '- ' + i.text).join('\n')}`);
+
+        return `
+        <div class="recipe-card">
+            <div class="recipe-card-header">
+                <div class="recipe-card-title">${recipe.name}</div>
+                <div class="recipe-card-actions">
+                    <button class="recipe-icon-btn btn-share-wa" onclick="window.open('https://api.whatsapp.com/send?text=${shareText}', '_blank')">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path></svg>
+                    </button>
+                    <button class="recipe-icon-btn" style="color:var(--accent-red); border-color:var(--accent-red);" onclick="deleteRecipe('${recipe.id}')">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+                    </button>
+                </div>
+            </div>
+            <ul class="recipe-ingredients-list">
+                ${ingList}
+            </ul>
+            <div class="recipe-add-all-btn" onclick="addRecipeToShoppingList('${recipe.id}')">
+                DODAJ SVE NA POPIS 🛒
+            </div>
+        </div>
+    `}).join('');
+}
+
+window.deleteRecipe = (id) => {
+    if (confirm("Obriši ovaj recept?")) {
+        state.recipes = state.recipes.filter(r => r.id !== id);
+        saveLocalData();
+        renderRecipes();
+    }
+}
+
+window.addRecipeToShoppingList = (id) => {
+    const recipe = state.recipes.find(r => r.id === id);
+    if (recipe) {
+        recipe.ingredients.forEach(ing => {
+            const newItem = {
+                id: Date.now() + Math.random(),
+                text: ing.text,
+                completed: false,
+                timestamp: new Date().toISOString()
+            };
+            state.shoppingList.unshift(newItem);
+        });
+        saveLocalData();
+        renderShoppingList();
+        syncWithBackend('updateShopping', state.shoppingList);
+        showToast(`Sastojci za ${recipe.name} dodani na popis!`, "success");
     }
 }
 

@@ -114,9 +114,41 @@
         <section id="view-recipes" class="tab-view">
             <div class="view-header">
                 <h2>Moji Recepti</h2>
-                <button id="btn-add-recipe" class="icon-btn">+</button>
+                <button id="btn-toggle-recipe-form" class="icon-btn">+</button>
             </div>
-            <div id="recipes-grid" class="grid-area">
+
+            <!-- Add Recipe Form (Hidden by default) -->
+            <div id="recipe-form" class="recipe-form-container hidden">
+                <input type="text" id="input-recipe-name" placeholder="Ime recepta (npr. Carbonara)"
+                    class="recipe-name-input">
+
+                <div class="shop-input-row" style="margin-top: 10px;">
+                    <input type="text" id="input-recipe-ingredient" placeholder="Dodaj sastojak..."
+                        list="product-suggestions" autocomplete="off">
+                </div>
+
+                <div class="shop-actions-row">
+                    <button id="btn-voice-recipe" class="shop-action-btn btn-voice-rec">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="18" height="18">
+                            <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z" />
+                            <path d="M19 10v2a7 7 0 0 1-14 0v-2" />
+                            <line x1="12" y1="19" x2="12" y2="23" />
+                            <line x1="8" y1="23" x2="16" y2="23" />
+                        </svg>
+                        GLAS
+                    </button>
+                    <button id="btn-add-ingredient" class="shop-action-btn btn-confirm-add">+ SASTOJAK</button>
+                </div>
+
+                <div id="draft-ingredients-list" class="draft-list"></div>
+
+                <button id="btn-save-recipe" class="btn-confirm-upiši" style="width: 100%; margin-top: 10px;">SPREMI
+                    RECEPT</button>
+            </div>
+
+            <!-- Saved Recipes Grid -->
+            <div id="recipes-grid" class="scroll-area" style="margin-top: 20px;">
                 <div class="empty-state">Ovdje će biti tvoji recepti.</div>
             </div>
         </section>
