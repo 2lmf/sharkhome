@@ -4,8 +4,8 @@
     "description": "Kupnja i režije na jednom mjestu",
     "start_url": "./index.html",
     "display": "standalone",
-    "background_color": "#030712",
-    "theme_color": "#6366f1",
+    "background_color": "#010103",
+    "theme_color": "#010103",
     "icons": [
         {
             "src": "icon.png",
