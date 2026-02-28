@@ -52,7 +52,7 @@ document.addEventListener('DOMContentLoaded', () => {
     fetchCloudData();
 
     // Show version in console for debugging
-    console.log("SharkHome v2.4 Loaded");
+    console.log("SharkHome v2.5 Loaded");
 });
 
 // Tab Navigation
@@ -476,34 +476,7 @@ function initAnalytics() {
             },
             plugins: {
                 legend: {
-                    display: true,
-                    position: 'bottom',
-                    labels: {
-                        color: 'white',
-                        font: { family: 'Orbitron', size: 10, weight: 'bold' },
-                        padding: 15,
-                        generateLabels: (chart) => {
-                            const data = chart.data;
-                            if (data.labels.length && data.datasets.length) {
-                                return data.labels.map((label, i) => {
-                                    const meta = chart.getDatasetMeta(0);
-                                    const style = meta.controller.getStyle(i);
-                                    const value = data.datasets[0].data[i];
-                                    const total = data.datasets[0].data.reduce((a, b) => a + b, 0);
-                                    const pct = total > 0 ? Math.round((value / total) * 100) : 0;
-                                    return {
-                                        text: `${label} (${pct}%)`,
-                                        fillStyle: style.backgroundColor,
-                                        strokeStyle: style.borderColor,
-                                        lineWidth: style.borderWidth,
-                                        hidden: !chart.isDatasetVisible(0) || chart.getDatasetMeta(0).data[i].hidden,
-                                        index: i
-                                    };
-                                });
-                            }
-                            return [];
-                        }
-                    }
+                    display: false // v2.5: Hide legend for more space
                 },
                 tooltip: {
                     enabled: true,
@@ -537,7 +510,7 @@ function initAnalytics() {
                     display: 'auto'
                 }
             },
-            cutout: '60%'
+            cutout: '65%' // v2.5: More airy doughnut
         }
     });
 
