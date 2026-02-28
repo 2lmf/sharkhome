@@ -52,7 +52,7 @@ document.addEventListener('DOMContentLoaded', () => {
     fetchCloudData();
 
     // Show version in console for debugging
-    console.log("SharkHome v2.2 Loaded");
+    console.log("SharkHome v2.3 Loaded");
 });
 
 // Tab Navigation
@@ -408,6 +408,9 @@ function initAnalytics() {
     const ctx = document.getElementById('expenseChart');
     if (!ctx) return;
 
+    // Register the datalabels plugin (v2.3)
+    Chart.register(ChartDataLabels);
+
     expenseChart = new Chart(ctx, {
         type: 'doughnut',
         data: {
@@ -419,19 +422,22 @@ function initAnalytics() {
                     '#F1C40F', '#1ABC9C', '#E74C3C', '#95A5A6', '#34495E'
                 ],
                 borderWidth: 0,
-                hoverOffset: 10
+                hoverOffset: 15
             }]
         },
         options: {
             responsive: true,
             maintainAspectRatio: false,
+            layout: {
+                padding: 10
+            },
             plugins: {
                 legend: {
                     display: true,
                     position: 'bottom',
                     labels: {
                         color: 'white',
-                        font: { family: 'Orbitron', size: 10 },
+                        font: { family: 'Orbitron', size: 10, weight: 'bold' },
                         padding: 15,
                         generateLabels: (chart) => {
                             const data = chart.data;
@@ -447,7 +453,7 @@ function initAnalytics() {
                                         fillStyle: style.backgroundColor,
                                         strokeStyle: style.borderColor,
                                         lineWidth: style.borderWidth,
-                                        hidden: chart.getDatasetMeta(0).data[i].hidden,
+                                        hidden: !chart.isDatasetVisible(0) || chart.getDatasetMeta(0).data[i].hidden,
                                         index: i
                                     };
                                 });
@@ -457,6 +463,7 @@ function initAnalytics() {
                     }
                 },
                 tooltip: {
+                    enabled: true,
                     callbacks: {
                         label: function (context) {
                             const total = context.dataset.data.reduce((a, b) => a + b, 0);
@@ -464,9 +471,28 @@ function initAnalytics() {
                             return ` ${context.label}: ${formatHRNumber(context.raw)} (${pct}%)`;
                         }
                     }
+                },
+                // v2.3: Data Labels inside segments
+                datalabels: {
+                    color: '#fff',
+                    font: {
+                        family: 'Orbitron',
+                        size: 11,
+                        weight: '900'
+                    },
+                    formatter: (value, ctx) => {
+                        const total = ctx.dataset.data.reduce((a, b) => a + b, 0);
+                        const pct = total > 0 ? Math.round((value / total) * 100) : 0;
+                        // Only show if > 5% to avoid clutter
+                        return pct > 5 ? `${ctx.chart.data.labels[ctx.dataIndex]}\n${pct}%` : '';
+                    },
+                    textAlign: 'center',
+                    textShadowColor: 'rgba(0,0,0,0.8)',
+                    textShadowBlur: 4,
+                    display: 'auto'
                 }
             },
-            cutout: '65%'
+            cutout: '55%' // Slightly smaller cutout to give more room for labels
         }
     });
 
