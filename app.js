@@ -9,7 +9,7 @@ const state = {
     recipes: [],
     customProducts: [],
     config: {
-        apiUrl: 'https://script.google.com/macros/s/AKfycbyQmtsILzYGXAPvPBFU5tvEObBnns3AFD4H9DLj20aYWXv7I_zJ3wpvuwbyuOa6Sr5R/exec',
+        apiUrl: localStorage.getItem('shark_api_url') || 'https://script.google.com/macros/s/AKfycbyQmtsILzYGXAPvPBFU5tvEObBnns3AFD4H9DLj20aYWXv7I_zJ3wpvuwbyuOa6Sr5R/exec',
         telegramToken: localStorage.getItem('hub_telegram_token') || ''
     }
 };
@@ -776,6 +776,16 @@ window.resetApp = () => {
             });
         }
         location.reload(true);
+    }
+};
+
+window.updateApiUrl = () => {
+    const newUrl = prompt("Unesi novi Google App Script URL:", state.config.apiUrl);
+    if (newUrl && newUrl.startsWith('https://')) {
+        state.config.apiUrl = newUrl.trim();
+        localStorage.setItem('shark_api_url', state.config.apiUrl);
+        showToast("URL spremljen! Osvježavam...", "success");
+        setTimeout(() => location.reload(), 1000);
     }
 };
 
