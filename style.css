@@ -239,6 +239,28 @@ h2 {
     padding: 1rem;
     margin-bottom: 1.5rem;
     display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.expense-desc-input {
+    width: 100%;
+    background: rgba(0, 0, 0, 0.2);
+    border: 1px solid var(--glass-border);
+    border-radius: 12px;
+    color: white;
+    font-family: 'Orbitron', sans-serif;
+    padding: 0.8rem 1rem;
+    outline: none;
+    transition: border-color 0.3s;
+}
+
+.expense-desc-input:focus {
+    border-color: var(--accent);
+}
+
+.expense-amount-action-row {
+    display: flex;
     flex-direction: row;
     align-items: stretch;
     gap: 10px;
@@ -376,8 +398,14 @@ input[type="text"]:focus {
     background: var(--card-bg);
     border: 1px solid var(--glass-border);
     border-radius: 12px;
-    padding: 0.6rem 1rem;
+    padding: 0.8rem 1rem;
     margin-bottom: 8px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.expense-item-top {
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -386,25 +414,50 @@ input[type="text"]:focus {
 .expense-meta {
     display: flex;
     flex-direction: column;
+    gap: 2px;
 }
 
 .expense-cat {
-    font-size: 0.7rem;
+    font-size: 0.8rem;
     color: var(--accent);
     text-transform: uppercase;
     font-weight: 700;
 }
 
 .expense-date {
-    font-size: 0.8rem;
+    font-size: 0.75rem;
     color: var(--text-dim);
-    /* Changed from var(--text-muted) to var(--text-dim) */
 }
 
 .expense-val {
     font-family: 'Orbitron', sans-serif;
     font-weight: 700;
     font-size: 1.1rem;
+}
+
+.expense-actions-bar {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    border-top: 1px solid rgba(255, 255, 255, 0.05);
+    padding-top: 8px;
+}
+
+.btn-expense-action {
+    background: transparent;
+    border: none;
+    font-family: 'Orbitron', sans-serif;
+    font-size: 0.75rem;
+    font-weight: 700;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    transition: opacity 0.2s;
+}
+
+.btn-expense-action:hover {
+    opacity: 0.7;
 }
 
 .expense-input-group {

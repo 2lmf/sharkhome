@@ -98,11 +98,16 @@
             </div>
 
             <div class="expense-entry-container">
-                <div class="amount-row">
-                    <span class="currency-symbol">€</span>
-                    <input type="number" id="input-expense-amount" placeholder="0.00" step="0.01" inputmode="decimal">
+                <input type="text" id="input-expense-desc" placeholder="Opis (npr. Luka, Konzum...)"
+                    class="expense-desc-input">
+                <div class="expense-amount-action-row">
+                    <div class="amount-row">
+                        <span class="currency-symbol">€</span>
+                        <input type="number" id="input-expense-amount" placeholder="0.00" step="0.01"
+                            inputmode="decimal">
+                    </div>
+                    <button id="btn-save-expense" class="btn-confirm-upiši">UPIŠI</button>
                 </div>
-                <button id="btn-save-expense" class="btn-confirm-upiši">UPIŠI</button>
             </div>
 
             <div class="list-title">Kronološki zapisi</div>

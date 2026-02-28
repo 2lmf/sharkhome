@@ -263,22 +263,28 @@ function initBills() {
 
     const btnSave = document.getElementById('btn-save-expense');
     const inputAmount = document.getElementById('input-expense-amount');
+    const inputDesc = document.getElementById('input-expense-desc');
 
     if (btnSave && inputAmount) {
         btnSave.addEventListener('click', () => {
             console.log("UPIŠI clicked!"); // Debug log
             const rawValue = inputAmount.value.replace(',', '.'); // Handle comma decimal separator
             const amount = parseFloat(rawValue);
+            const desc = inputDesc ? inputDesc.value.trim() : "";
 
             if (!isNaN(amount) && amount > 0) {
                 addExpense({
                     id: Date.now(),
                     category: selectedCategory,
+                    description: desc,
                     amount: amount, // Store as float
                     date: new Date().toISOString()
                 });
                 inputAmount.value = '';
-                showToast(`${selectedCategory}: ${formatHRNumber(amount)} upisano!`, 'success');
+                if (inputDesc) inputDesc.value = '';
+
+                const title = desc ? `${selectedCategory} (${desc})` : selectedCategory;
+                showToast(`${title}: ${formatHRNumber(amount)} upisano!`, 'success');
             } else {
                 showToast("Prvo upiši brojku!", "error");
             }
@@ -324,41 +330,61 @@ function renderExpenses() {
     container.innerHTML = state.expenses.map(ex => {
         // Handle old string amounts safely
         const amountFloat = typeof ex.amount === 'string' ? parseFloat(ex.amount.replace(',', '.')) : ex.amount;
+        const descText = ex.description ? ` - ${ex.description}` : '';
+
         return `
-        <div class="expense-item" onclick="editExpense('${ex.id}')">
-            <div class="expense-meta">
-                <span class="expense-cat">${ex.category}</span>
-                <span class="expense-date">${formatCroatianDate(ex.date)}</span>
+        <div class="expense-item">
+            <div class="expense-item-top">
+                <div class="expense-meta">
+                    <span class="expense-cat">${ex.category}${descText}</span>
+                    <span class="expense-date">${formatCroatianDate(ex.date)}</span>
+                </div>
+                <div class="expense-val">${formatHRNumber(amountFloat)}</div>
             </div>
-            <div class="expense-val">${formatHRNumber(amountFloat)}</div>
+            <div class="expense-actions-bar">
+                <button class="btn-expense-action" style="color:var(--accent);" onclick="editExpense('${ex.id}')">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
+                    Uredi
+                </button>
+                <button class="btn-expense-action" style="color:var(--accent-red);" onclick="deleteExpense('${ex.id}')">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+                    Obriši
+                </button>
+            </div>
         </div>
     `}).join('');
 }
 
-function formatHRNumber(num) {
-    if (isNaN(num)) return "0,00 €";
-    return new Intl.NumberFormat('hr-HR', {
-        style: 'currency',
-        currency: 'EUR',
-        minimumFractionDigits: 2,
-        maximumFractionDigits: 2
-    }).format(num);
-}
-
-function formatCroatianDate(iso) {
-    const d = new Date(iso);
-    return d.toLocaleDateString('hr-HR') + ' ' + d.toLocaleTimeString('hr-HR', { hour: '2-digit', minute: '2-digit' });
-}
+window.deleteExpense = (id) => {
+    if (confirm("Želiš li zaista obrisati ovaj trošak?")) {
+        state.expenses = state.expenses.filter(e => e.id != id);
+        saveLocalData();
+        renderExpenses();
+    }
+};
 
 window.editExpense = (id) => {
     const ex = state.expenses.find(e => e.id == id);
     if (!ex) return;
 
-    const newAmount = prompt(`Uredi iznos za ${ex.category} (${formatCroatianDate(ex.date)}):`, ex.amount);
+    const newDesc = prompt(`Uredi opis za ${ex.category}:`, ex.description || '');
+    if (newDesc === null) return; // User cancelled
+
+    // Convert float back to string with comma for prompting just in case
+    const amountStr = typeof ex.amount === 'number' ? ex.amount.toString() : ex.amount;
+    const newAmount = prompt(`Uredi iznos za ${ex.category} (${formatCroatianDate(ex.date)}):`, amountStr);
+
     if (newAmount !== null) {
-        ex.amount = newAmount;
-        saveLocalData();
-        renderExpenses();
+        const rawValue = newAmount.replace(',', '.');
+        const amountFloat = parseFloat(rawValue);
+        if (!isNaN(amountFloat)) {
+            ex.amount = amountFloat;
+            ex.description = newDesc.trim();
+            saveLocalData();
+            renderExpenses();
+        } else {
+            alert("Neispravan iznos!");
+        }
     }
 }
 
