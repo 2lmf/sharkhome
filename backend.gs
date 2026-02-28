@@ -79,6 +79,22 @@ function updateSheet(ss, sheetName, dataList) {
 function appendRow(ss, sheetName, data) {
   const sheet = ss.getSheetByName(sheetName) || ss.insertSheet(sheetName);
   
+  // Define fixed headers for specific sheets to ensure column consistency
+  let headers = [];
+  if (sheetName === 'Expenses') {
+    headers = ['id', 'category', 'amount', 'date', 'description'];
+  } else {
+    headers = Object.keys(data);
+  }
+
+  // Format amount for Expenses
+  if (sheetName === 'Expenses' && typeof data.amount === 'number') {
+    // Format: 1.234,56
+    let parts = data.amount.toFixed(2).split('.');
+    parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+    data.amount = parts.join(',');
+  }
+  
   // Format dates in data
   for (let key in data) {
     if (data[key] instanceof Date || (typeof data[key] === 'string' && data[key].includes('T') && data[key].includes('Z'))) {
@@ -86,13 +102,13 @@ function appendRow(ss, sheetName, data) {
     }
   }
 
-  const headers = Object.keys(data);
   if (sheet.getLastRow() === 0) {
     sheet.appendRow(headers);
-  } else {
-    // Correct headers check is complex, we just append to existing
   }
-  sheet.appendRow(headers.map(h => data[h]));
+  
+  // Map data to headers
+  const row = headers.map(h => data[h] !== undefined ? data[h] : "");
+  sheet.appendRow(row);
 }
 
 function createResponse(data) {
