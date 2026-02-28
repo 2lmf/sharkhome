@@ -1000,12 +1000,12 @@ input[type="text"]:focus {
     font-weight: 400;
 }
 
-/* v2.4: Chart Container with room for external labels */
+/* v2.8: Aggressive height reduction to force smaller doughnut and more label space */
 .chart-container {
-    height: 380px;
+    height: 280px;
     position: relative;
     margin-bottom: 2rem;
-    padding: 30px 10px;
+    padding: 10px;
     background: var(--card-bg);
     border: 1px solid var(--glass-border);
     border-radius: 20px;

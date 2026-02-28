@@ -52,7 +52,7 @@ document.addEventListener('DOMContentLoaded', () => {
     fetchCloudData();
 
     // Show version in console for debugging
-    console.log("SharkHome v2.7 Loaded");
+    console.log("SharkHome v2.8 Loaded");
 });
 
 // Tab Navigation
@@ -468,10 +468,10 @@ function initAnalytics() {
             maintainAspectRatio: false,
             layout: {
                 padding: {
-                    left: 75,   // v2.7: Increased from 45
-                    right: 75,  // v2.7: Increased from 45
-                    top: 35,    // v2.7: Increased from 20
-                    bottom: 35  // v2.7: Increased from 20
+                    left: 100,  // v2.8: Aggressive shrink
+                    right: 100, // v2.8: Aggressive shrink
+                    top: 40,
+                    bottom: 40
                 }
             },
             plugins: {
