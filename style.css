@@ -214,9 +214,8 @@ h2 {
 }
 
 .btn-voice-rec {
-    background: #34495e;
-    /* Sleek slate grey */
-    color: white;
+    background: #ffffff;
+    color: #000000;
 }
 
 .btn-confirm-add {

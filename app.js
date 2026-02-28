@@ -250,6 +250,10 @@ function initAnalytics() {
     console.log("Analytics init (stub)");
 }
 
+function renderAnalytics() {
+    console.log("Analytics render (stub)");
+}
+
 function addExpense(expense) {
     state.expenses.unshift(expense);
     saveLocalData();
