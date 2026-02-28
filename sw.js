@@ -1,4 +1,4 @@
-const CACHE_NAME = 'sharkhome-v1.9';
+const CACHE_NAME = 'sharkhome-v2.0';
 const ASSETS = [
     './',
     './index.html',
