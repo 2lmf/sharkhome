@@ -333,18 +333,152 @@ function initBills() {
     }
 }
 
-// Scanner Stub
+// Scanner (html5-qrcode)
+let html5QrScanner = null;
+
 function initScanner() {
-    console.log("Scanner init (stub)");
+    const btnOpenScanner = document.getElementById('btn-scan-bill'); // You'll need this button in index.html
+    const btnCloseScanner = document.getElementById('btn-close-scanner');
+    const overlay = document.getElementById('scanner-overlay');
+
+    if (btnOpenScanner) {
+        btnOpenScanner.addEventListener('click', () => {
+            overlay.classList.remove('hidden');
+            startScanner();
+        });
+    }
+
+    if (btnCloseScanner) {
+        btnCloseScanner.addEventListener('click', () => {
+            overlay.classList.add('hidden');
+            stopScanner();
+        });
+    }
 }
 
-// Analytics Stub (Chart.js)
+function startScanner() {
+    html5QrScanner = new Html5Qrcode("reader");
+    const config = { fps: 10, qrbox: { width: 250, height: 150 } };
+
+    html5QrScanner.start(
+        { facingMode: "environment" },
+        config,
+        (decodedText) => {
+            stopScanner();
+            document.getElementById('scanner-overlay').classList.add('hidden');
+            handleScanResult(decodedText, 'bill');
+        },
+        (errorMessage) => {
+            // console.log(errorMessage);
+        }
+    ).catch(err => {
+        showToast("Greška pri pokretanju kamere.", "error");
+    });
+}
+
+function stopScanner() {
+    if (html5QrScanner) {
+        html5QrScanner.stop().then(() => {
+            html5QrScanner = null;
+        });
+    }
+}
+
+// Analytics (Chart.js)
+let expenseChart = null;
+
 function initAnalytics() {
-    console.log("Analytics init (stub)");
+    const ctx = document.getElementById('expenseChart');
+    if (!ctx) return;
+
+    expenseChart = new Chart(ctx, {
+        type: 'doughnut',
+        data: {
+            labels: [],
+            datasets: [{
+                data: [],
+                backgroundColor: [
+                    '#E67E22', '#2ECC71', '#3498DB', '#9B59B6',
+                    '#F1C40F', '#1ABC9C', '#E74C3C', '#95A5A6', '#34495E'
+                ],
+                borderWidth: 0,
+                hoverOffset: 10
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    display: false
+                },
+                tooltip: {
+                    callbacks: {
+                        label: function (context) {
+                            return ` ${context.label}: ${formatHRNumber(context.raw)}`;
+                        }
+                    }
+                }
+            },
+            cutout: '70%'
+        }
+    });
+
+    renderAnalytics();
 }
 
 function renderAnalytics() {
-    console.log("Analytics render (stub)");
+    if (!expenseChart) return;
+
+    // Calculate totals by category
+    const totals = {};
+    state.expenses.forEach(ex => {
+        const amount = typeof ex.amount === 'string' ? parseFloat(ex.amount.replace(',', '.')) : ex.amount;
+        if (!isNaN(amount)) {
+            totals[ex.category] = (totals[ex.category] || 0) + amount;
+        }
+    });
+
+    const labels = Object.keys(totals);
+    const data = Object.values(totals);
+
+    expenseChart.data.labels = labels;
+    expenseChart.data.datasets[0].data = data;
+    expenseChart.update();
+
+    // Render Breakdown List
+    const breakdownContainer = document.getElementById('category-breakdown');
+    if (breakdownContainer) {
+        if (labels.length === 0) {
+            breakdownContainer.innerHTML = '<div class="empty-state">Nema podataka za prikaz.</div>';
+            return;
+        }
+
+        const totalSum = data.reduce((a, b) => a + b, 0);
+
+        breakdownContainer.innerHTML = `
+            <div class="total-spend-card">
+                <span class="total-label">UKUPNO MJESEČNO</span>
+                <span class="total-amount">${formatHRNumber(totalSum)}</span>
+            </div>
+            ${labels.map((cat, i) => {
+            const percentage = totalSum > 0 ? Math.round((totals[cat] / totalSum) * 100) : 0;
+            const color = expenseChart.data.datasets[0].backgroundColor[i % 9];
+            return `
+                <div class="breakdown-item">
+                    <div class="breakdown-info">
+                        <span class="breakdown-color" style="background:${color}"></span>
+                        <span class="breakdown-name">${cat}</span>
+                    </div>
+                    <div class="breakdown-values">
+                        <span class="breakdown-val">${formatHRNumber(totals[cat])}</span>
+                        <span class="breakdown-pct">${percentage}%</span>
+                    </div>
+                </div>
+                `;
+        }).join('')}
+        `;
+    }
 }
 
 function addExpense(expense) {
@@ -649,9 +783,16 @@ function handleScanResult(text, mode) {
     if (mode === 'bill') {
         const decoded = parseHUB3(text);
         if (decoded) {
-            addBill(decoded);
+            // Map HUB 3.0 data to my expense structure
+            const newExpense = {
+                id: Date.now(),
+                category: 'Ostalo', // Default category for scanned bills
+                amount: decoded.amount,
+                description: `Sken: ${decoded.payer}`,
+                date: new Date().toISOString()
+            };
+            addExpense(newExpense);
             showToast("Uplatnica uspješno skenirana!", "success");
-            switchTab('bills');
         } else {
             showToast("Nevažeći HUB 3.0 kod.", "error");
         }
@@ -663,19 +804,30 @@ function handleScanResult(text, mode) {
 }
 
 function parseHUB3(raw) {
-    // Basic HUB 3.0 parser logic (to be refined)
-    // Format is usually HUB3\n...\n
     if (!raw.startsWith("HUB3")) return null;
 
     const lines = raw.split('\n');
+    // HUB 3.0 standard indices:
+    // Amount is often in line 11 (if 0-indexed it depends on the raw string structure)
+    // For standard HUB 3.0 (PDF417), indices are often:
+    // 10: Valuta (EUR)
+    // 11: Iznos (e.g. 0000000001235 -> 12.35)
+    // 13: IBAN primatelja
+    // 15: Poziv na broj
+
+    let rawAmount = lines[11] || '0';
+    let amountFloat = 0;
+
+    if (rawAmount.length > 2) {
+        amountFloat = parseFloat(rawAmount) / 100;
+    } else {
+        amountFloat = parseFloat(rawAmount);
+    }
+
     return {
         id: Date.now(),
-        raw: raw,
-        amount: lines[11] || '0,00',
-        currency: lines[10] || 'EUR',
-        iban: lines[13] || '',
-        reference: lines[15] || '',
-        payer: lines[4] || 'Nepoznato',
+        amount: amountFloat,
+        payer: lines[4] || 'Nepoznat platitelj',
         timestamp: new Date().toISOString()
     };
 }
