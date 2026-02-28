@@ -28,6 +28,13 @@ let currentRecipeDraft = {
 
 // Initialization
 document.addEventListener('DOMContentLoaded', () => {
+    // Register Service Worker
+    if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.register('./sw.js')
+            .then(() => console.log("SW Registered"))
+            .catch(err => console.log("SW Error", err));
+    }
+
     initTabs();
     initShopping();
     initScanner();
@@ -40,6 +47,9 @@ document.addEventListener('DOMContentLoaded', () => {
     renderShoppingList();
     renderAnalytics();
     renderRecipes();
+
+    // Show version in console for debugging
+    console.log("SharkHome v1.3 Loaded");
 });
 
 // Tab Navigation
@@ -587,6 +597,42 @@ window.addRecipeToShoppingList = (id) => {
 
 // Global scope for onclick
 window.addItemToShoppingList = addItemToShoppingList;
+
+// Utility: Formatting
+function formatHRNumber(num) {
+    if (isNaN(num)) return "0,00 €";
+    return new Intl.NumberFormat('hr-HR', {
+        style: 'currency',
+        currency: 'EUR',
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2
+    }).format(num);
+}
+
+function formatCroatianDate(iso) {
+    if (!iso) return "";
+    const date = new Date(iso);
+    return date.toLocaleString('hr-HR', {
+        day: '2-digit',
+        month: '2-digit',
+        year: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit'
+    });
+}
+
+// Reset Logic for Debugging
+window.resetApp = () => {
+    if (confirm("Ovo će obrisati sve lokalne podatke i cache. Jesi li siguran?")) {
+        localStorage.clear();
+        if ('serviceWorker' in navigator) {
+            caches.keys().then(names => {
+                for (let name of names) caches.delete(name);
+            });
+        }
+        location.reload(true);
+    }
+};
 
 function handleScanResult(text, mode) {
     if (mode === 'bill') {
