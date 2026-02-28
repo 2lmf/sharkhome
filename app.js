@@ -120,8 +120,9 @@ function initVoice() {
 }
 
 function addItemToShoppingList(text) {
-    // Split by comma or word " i " (and) to allow multiple items at once
-    const items = text.split(/, |,| i /).filter(t => t.trim() !== "");
+    console.log("Splitting input:", text);
+    // Split by comma or the word "i" (case-insensitive)
+    const items = text.split(/\s*,\s*|\s+i\s+/i).filter(t => t.trim() !== "");
 
     items.forEach(itemText => {
         const newItem = {
@@ -237,6 +238,16 @@ function initBills() {
             if (e.key === 'Enter') btnSave.click();
         });
     }
+}
+
+// Scanner Stub
+function initScanner() {
+    console.log("Scanner init (stub)");
+}
+
+// Analytics Stub (Chart.js)
+function initAnalytics() {
+    console.log("Analytics init (stub)");
 }
 
 function addExpense(expense) {
