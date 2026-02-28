@@ -170,6 +170,7 @@ function saveLocalData() {
 }
 
 function loadLocalData() {
+    const categories = ['Dućan', 'Struja', 'Plin', 'Mobitel', 'TV', 'Internet', 'Sport', 'Škola/Vrtić', 'Ostalo'];
     const saved = localStorage.getItem('hub_state');
     if (saved) {
         const parsed = JSON.parse(saved);
