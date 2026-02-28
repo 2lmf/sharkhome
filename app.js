@@ -265,11 +265,11 @@ function initBills() {
                 addExpense({
                     id: Date.now(),
                     category: selectedCategory,
-                    amount: amount.toFixed(2),
+                    amount: amount, // Store as float
                     date: new Date().toISOString()
                 });
                 inputAmount.value = '';
-                showToast(`${selectedCategory}: ${amount.toFixed(2)} € upisano!`, 'success');
+                showToast(`${selectedCategory}: ${formatHRNumber(amount)} upisano!`, 'success');
             } else {
                 showToast("Prvo upiši brojku!", "error");
             }
@@ -312,15 +312,28 @@ function renderExpenses() {
         return;
     }
 
-    container.innerHTML = state.expenses.map(ex => `
+    container.innerHTML = state.expenses.map(ex => {
+        // Handle old string amounts safely
+        const amountFloat = typeof ex.amount === 'string' ? parseFloat(ex.amount.replace(',', '.')) : ex.amount;
+        return `
         <div class="expense-item" onclick="editExpense('${ex.id}')">
             <div class="expense-meta">
                 <span class="expense-cat">${ex.category}</span>
                 <span class="expense-date">${formatCroatianDate(ex.date)}</span>
             </div>
-            <div class="expense-val">${ex.amount} €</div>
+            <div class="expense-val">${formatHRNumber(amountFloat)}</div>
         </div>
-    `).join('');
+    `}).join('');
+}
+
+function formatHRNumber(num) {
+    if (isNaN(num)) return "0,00 €";
+    return new Intl.NumberFormat('hr-HR', {
+        style: 'currency',
+        currency: 'EUR',
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2
+    }).format(num);
 }
 
 function formatCroatianDate(iso) {

@@ -376,8 +376,8 @@ input[type="text"]:focus {
     background: var(--card-bg);
     border: 1px solid var(--glass-border);
     border-radius: 12px;
-    padding: 1rem;
-    margin-bottom: 10px;
+    padding: 0.6rem 1rem;
+    margin-bottom: 8px;
     display: flex;
     justify-content: space-between;
     align-items: center;
