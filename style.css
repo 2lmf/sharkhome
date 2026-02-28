@@ -57,10 +57,41 @@ header {
 
 h1 {
     font-family: 'Orbitron', sans-serif;
-    font-size: 1.5rem;
-    font-weight: 700;
+    font-size: 1.25rem;
+    font-weight: 900;
     margin: 0;
     letter-spacing: 2px;
+}
+
+.header-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.header-right {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.btn-refresh-app {
+    background: rgba(230, 126, 34, 0.15);
+    border: 1px solid var(--accent);
+    color: var(--accent);
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s;
+    box-shadow: 0 0 10px rgba(230, 126, 34, 0.2);
+}
+
+.btn-refresh-app:active {
+    transform: rotate(180deg) scale(0.9);
 }
 
 h1 span {
@@ -332,7 +363,7 @@ input[type="text"] {
     border-radius: 12px;
     padding: 0.8rem 1rem;
     color: white;
-    font-family: 'Outfit', sans-serif;
+    font-family: 'Orbitron', sans-serif;
     outline: none;
     transition: all 0.3s;
 }
@@ -419,10 +450,11 @@ input[type="text"]:focus {
 }
 
 .expense-cat {
-    font-size: 0.8rem;
+    font-size: 0.75rem;
     color: var(--accent);
     text-transform: uppercase;
     font-weight: 700;
+    font-family: 'Orbitron', sans-serif;
 }
 
 .expense-date {

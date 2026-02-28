@@ -49,7 +49,7 @@ document.addEventListener('DOMContentLoaded', () => {
     renderRecipes();
 
     // Show version in console for debugging
-    console.log("SharkHome v1.8 Loaded");
+    console.log("SharkHome v1.9 Loaded");
 });
 
 // Tab Navigation
