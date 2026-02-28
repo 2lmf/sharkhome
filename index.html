@@ -69,14 +69,25 @@
         </section>
 
         <section id="view-bills" class="tab-view">
+            <div class="view-header">
+                <h2>Režije i Troškovi</h2>
+            </div>
+
             <div class="category-grid" id="bill-categories">
                 <button class="cat-btn active" data-cat="Dućan">🛒 dućan</button>
                 <button class="cat-btn" data-cat="Struja">🕯️ struja</button>
-                <span class="value warning">0</span>
+                <button class="cat-btn" data-cat="Plin">🔥 plin</button>
+                <button class="cat-btn" data-cat="Mobitel">📱 mobitel</button>
+                <button class="cat-btn" data-cat="TV">📺 tv</button>
+                <button class="cat-btn" data-cat="Internet">🌐 internet</button>
+                <button class="cat-btn" data-cat="Sport">⚽ sport</button>
+                <button class="cat-btn" data-cat="Škola/Vrtić">🎒 škola</button>
+                <button class="cat-btn highlight" id="btn-add-expense">➕ dodaj</button>
             </div>
-            </div>
-            <div id="bills-list-container" class="scroll-area">
-                <!-- Bills will be listed here -->
+
+            <div class="list-title">Kronološki zapisi</div>
+            <div id="expenses-list" class="scroll-area">
+                <div class="empty-state">Nema zapisa. Odaberi kategoriju iznad.</div>
             </div>
         </section>
 
@@ -85,17 +96,22 @@
                 <h2>Moji Recepti</h2>
                 <button id="btn-add-recipe" class="icon-btn">+</button>
             </div>
-            <section id="view-stats" class="tab-view">
-                <div class="view-header">
-                    <h2>Analitika Potrošnje</h2>
-                </div>
-                <div class="card chart-container">
-                    <canvas id="expenseChart"></canvas>
-                </div>
-                <div id="category-breakdown" class="scroll-area">
-                    <!-- Category list with totals -->
-                </div>
-            </section>
+            <div id="recipes-grid" class="grid-area">
+                <div class="empty-state">Ovdje će biti tvoji recepti.</div>
+            </div>
+        </section>
+
+        <section id="view-stats" class="tab-view">
+            <div class="view-header">
+                <h2>Analitika Potrošnje</h2>
+            </div>
+            <div class="card chart-container">
+                <canvas id="expenseChart"></canvas>
+            </div>
+            <div id="category-breakdown" class="scroll-area">
+                <!-- Category list with totals -->
+            </div>
+        </section>
     </main>
 
     <!-- Scanner Overlay -->
