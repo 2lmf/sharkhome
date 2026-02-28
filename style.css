@@ -962,3 +962,16 @@ input[type="text"]:focus {
     background: var(--accent);
     color: black;
 }
+
+/* Global Font Overrides for Consistency (v1.9) */
+.item-text,
+.expense-cat,
+.breakdown-name,
+.shop-item,
+.list-item {
+    font-family: 'Orbitron', sans-serif !important;
+}
+
+.item-text {
+    font-weight: 400;
+}
