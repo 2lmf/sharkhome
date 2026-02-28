@@ -185,29 +185,45 @@ function loadLocalData() {
     }
 }
 
+let selectedCategory = 'Dućan';
+
 function initBills() {
     const catBtns = document.querySelectorAll('.cat-btn[data-cat]');
+
+    // Set initial active state
     catBtns.forEach(btn => {
+        if (btn.dataset.cat === selectedCategory) btn.classList.add('active');
+
         btn.addEventListener('click', () => {
-            promptForExpense(btn.dataset.cat);
+            selectedCategory = btn.dataset.cat;
+            catBtns.forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
         });
     });
 
-    document.getElementById('btn-add-expense').addEventListener('click', () => {
-        promptForExpense('Ostalo');
-    });
-}
+    const btnSave = document.getElementById('btn-save-expense');
+    const inputAmount = document.getElementById('input-expense-amount');
 
-function promptForExpense(category) {
-    const amount = prompt(`Unesi iznos za: ${category}`, "0.00");
-    if (amount !== null && !isNaN(parseFloat(amount.replace(',', '.')))) {
-        addExpense({
-            id: Date.now(),
-            category: category,
-            amount: amount,
-            date: new Date().toISOString()
-        });
-    }
+    btnSave.addEventListener('click', () => {
+        const amount = inputAmount.value.trim();
+        if (amount && !isNaN(parseFloat(amount))) {
+            addExpense({
+                id: Date.now(),
+                category: selectedCategory,
+                amount: amount,
+                date: new Date().toISOString()
+            });
+            inputAmount.value = '';
+            showToast(`${selectedCategory}: ${amount} € spremljeno!`, 'success');
+        } else {
+            showToast("Unesi ispravan iznos.", "error");
+        }
+    });
+
+    // Enter key support
+    inputAmount.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') btnSave.click();
+    });
 }
 
 function addExpense(expense) {

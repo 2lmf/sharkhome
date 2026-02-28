@@ -74,7 +74,7 @@
             </div>
 
             <div class="category-grid" id="bill-categories">
-                <button class="cat-btn active" data-cat="Dućan">🛒 dućan</button>
+                <button class="cat-btn" data-cat="Dućan">🛒 dućan</button>
                 <button class="cat-btn" data-cat="Struja">🕯️ struja</button>
                 <button class="cat-btn" data-cat="Plin">🔥 plin</button>
                 <button class="cat-btn" data-cat="Mobitel">📱 mobitel</button>
@@ -82,7 +82,12 @@
                 <button class="cat-btn" data-cat="Internet">🌐 internet</button>
                 <button class="cat-btn" data-cat="Sport">⚽ sport</button>
                 <button class="cat-btn" data-cat="Škola/Vrtić">🎒 škola</button>
-                <button class="cat-btn highlight" id="btn-add-expense">➕ dodaj</button>
+                <button class="cat-btn" data-cat="Ostalo">❓ ostalo</button>
+            </div>
+
+            <div class="input-group expense-input-group">
+                <input type="number" id="input-expense-amount" placeholder="Iznos (EUR)..." step="0.01">
+                <button id="btn-save-expense" class="btn-primary">SAČUVAJ</button>
             </div>
 
             <div class="list-title">Kronološki zapisi</div>
