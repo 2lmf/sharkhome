@@ -65,7 +65,7 @@ function updateSheet(ss, sheetName, dataList) {
   
   let headers = (sheetName === 'Expenses') 
     ? ['id', 'category', 'amount', 'description', 'date'] 
-    : ['id', 'text', 'completed', 'timestamp'];
+    : ['id', 'text', 'completed', 'recipient', 'timestamp'];
 
   sheet.appendRow(headers);
   if (dataList.length === 0) return;
@@ -100,39 +100,51 @@ function updateSheet(ss, sheetName, dataList) {
 }
 
 /**
- * Hourly Trigger Function: Checks if Shopping List changed and sends email
- * Set this up in Apps Script Triggers (Time-driven -> Hourly)
+ * Hourly Trigger Function: Checks if Shopping List changed and sends targeted emails
  */
 function checkAndNotifyShoppingList() {
   const props = PropertiesService.getScriptProperties();
-  const lastChange = props.getProperty('LAST_CHANGE') || "0";
-  const lastNotified = props.getProperty('LAST_NOTIFIED') || "0";
+  const lastChange = parseInt(props.getProperty('LAST_CHANGE') || "0");
+  const lastNotified = parseInt(props.getProperty('LAST_NOTIFIED') || "0");
 
-  if (parseInt(lastChange) > parseInt(lastNotified)) {
-    const sheet = SpreadsheetApp.openById(SHEET_ID).getSheetByName('ShoppingList');
+  if (lastChange > lastNotified) {
     const data = getSheetData(SpreadsheetApp.openById(SHEET_ID), 'ShoppingList');
-    
     if (data.length === 0) return;
 
-    // Filter only uncompleted items for a cleaner mail
-    const items = data.filter(item => !item.completed).map(item => "- " + item.text).join("\n");
+    // Filter items added after last notification that have a recipient
+    const uncompleted = data.filter(item => !item.completed && item.recipient);
     
-    if (items === "") return;
+    if (uncompleted.length === 0) return;
 
-    const subject = "Novi upis u popis za dućan 🛒";
-    const body = "Pozdrav,\n\nImaš nove stavke na popisu za dućan:\n\n" + items + "\n\nSretna kupnja!\nSharkHome";
-    
-    const recipients = "fantoni64@gmail.com, anic.josipa@gmail.com";
-    
-    MailApp.sendEmail(recipients, subject, body);
+    // Group items by recipient
+    const mailGroups = {};
+    uncompleted.forEach(item => {
+      const rec = item.recipient.trim().toLowerCase();
+      if (!mailGroups[rec]) mailGroups[rec] = [];
+      mailGroups[rec].push(item.text);
+    });
+
+    // Send personalized emails
+    for (const recipient in mailGroups) {
+      const itemsText = mailGroups[recipient].map(t => "- " + t).join("\n");
+      const subject = "Novi upis u popis za dućan 🛒";
+      const body = "Pozdrav,\n\nImaš nove stavke na popisu za dućan:\n\n" + itemsText + "\n\nSretna kupnja!\nSharkHome";
+      
+      try {
+        MailApp.sendEmail(recipient, subject, body);
+        Logger.log("Email poslan na: " + recipient);
+      } catch (e) {
+        Logger.log("Greška pri slanju na " + recipient + ": " + e.message);
+      }
+    }
     
     // Update notified timestamp
-    props.setProperty('LAST_NOTIFIED', lastChange);
-    Logger.log("Email sent to: " + recipients);
+    props.setProperty('LAST_NOTIFIED', lastChange.toString());
   } else {
-    Logger.log("No new changes since last check.");
+    Logger.log("Nema novih promjena za obavijesti.");
   }
 }
+
 
 /**
  * Pomoćna funkcija za JSON odgovor
