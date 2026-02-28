@@ -590,7 +590,43 @@ input[type="text"]:focus {
     color: var(--text-main);
     font-size: 0.95rem;
     line-height: 1.5;
-    margin-left: 20px;
+    margin-left: 0;
+    padding-left: 0;
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.recipe-ingredient-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: rgba(255, 255, 255, 0.02);
+    border: 1px solid var(--glass-border);
+    border-radius: 10px;
+    padding: 8px 12px;
+}
+
+.recipe-ingredient-text {
+    flex: 1;
+}
+
+.btn-edit-ingredient {
+    background: transparent;
+    border: none;
+    color: var(--accent);
+    cursor: pointer;
+    padding: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0.7;
+    transition: opacity 0.2s;
+}
+
+.btn-edit-ingredient:hover {
+    opacity: 1;
 }
 
 .recipe-add-all-btn {

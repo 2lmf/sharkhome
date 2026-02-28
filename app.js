@@ -458,7 +458,14 @@ function renderRecipes() {
     }
 
     grid.innerHTML = state.recipes.map(recipe => {
-        const ingList = recipe.ingredients.map(i => `<li>${i.text}</li>`).join('');
+        const ingList = recipe.ingredients.map(i => `
+            <li class="recipe-ingredient-item">
+                <span class="recipe-ingredient-text">• ${i.text}</span>
+                <button class="btn-edit-ingredient" onclick="editRecipeIngredient('${recipe.id}', ${i.id})">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
+                </button>
+            </li>
+        `).join('');
         const shareText = encodeURIComponent(`Novi recept: *${recipe.name}*\nSastojci:\n${recipe.ingredients.map(i => '- ' + i.text).join('\n')}`);
 
         return `
@@ -487,6 +494,21 @@ function renderRecipes() {
 window.deleteRecipe = (id) => {
     if (confirm("Obriši ovaj recept?")) {
         state.recipes = state.recipes.filter(r => r.id !== id);
+        saveLocalData();
+        renderRecipes();
+    }
+}
+
+window.editRecipeIngredient = (recipeId, ingredientId) => {
+    const recipe = state.recipes.find(r => r.id === recipeId);
+    if (!recipe) return;
+
+    const ingredient = recipe.ingredients.find(i => i.id == ingredientId);
+    if (!ingredient) return;
+
+    const newText = prompt(`Uredi sastojak:`, ingredient.text);
+    if (newText !== null && newText.trim() !== '') {
+        ingredient.text = newText.trim();
         saveLocalData();
         renderRecipes();
     }
