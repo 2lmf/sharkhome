@@ -52,7 +52,7 @@ document.addEventListener('DOMContentLoaded', () => {
     fetchCloudData();
 
     // Show version in console for debugging
-    console.log("SharkHome v2.5 Loaded");
+    console.log("SharkHome v2.6 Loaded");
 });
 
 // Tab Navigation
@@ -493,11 +493,11 @@ function initAnalytics() {
                     anchor: 'end',
                     align: 'end',
                     offset: 15,
-                    color: '#fff',
+                    color: (ctx) => ctx.dataset.backgroundColor[ctx.dataIndex % 9], // v2.6: Color matches segment
                     font: {
                         family: 'Orbitron',
-                        size: 9,
-                        weight: '700'
+                        size: 10,
+                        weight: '900'
                     },
                     formatter: (value, ctx) => {
                         const total = ctx.dataset.data.reduce((a, b) => a + b, 0);
