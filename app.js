@@ -119,8 +119,8 @@ function addItemToShoppingList(text) {
     saveLocalData();
     renderShoppingList();
 
-    // Trigger sync placeholder
-    syncWithBackend();
+    // Trigger sync
+    syncWithBackend('updateShopping', state.shoppingList);
 }
 
 function renderShoppingList() {
@@ -149,7 +149,7 @@ window.toggleItem = (id) => {
         item.completed = !item.completed;
         saveLocalData();
         renderShoppingList();
-        syncWithBackend();
+        syncWithBackend('updateShopping', state.shoppingList);
     }
 };
 
@@ -157,7 +157,7 @@ window.deleteItem = (id) => {
     state.shoppingList = state.shoppingList.filter(i => i.id != id);
     saveLocalData();
     renderShoppingList();
-    syncWithBackend();
+    syncWithBackend('updateShopping', state.shoppingList);
 };
 
 // Persistence
