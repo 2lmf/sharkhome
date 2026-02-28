@@ -48,8 +48,11 @@ document.addEventListener('DOMContentLoaded', () => {
     renderAnalytics();
     renderRecipes();
 
+    // v2.0 NEW: Always fetch latest from cloud on startup
+    fetchCloudData();
+
     // Show version in console for debugging
-    console.log("SharkHome v1.9 Loaded");
+    console.log("SharkHome v2.0 Loaded");
 });
 
 // Tab Navigation
@@ -807,10 +810,13 @@ function formatCroatianDate(iso) {
     });
 }
 
-// Reset Logic for Debugging
+// Reset Logic - Safe Refresh (v2.0)
 window.resetApp = () => {
-    if (confirm("Ovo će obrisati sve lokalne podatke i cache. Jesi li siguran?")) {
-        localStorage.clear();
+    if (confirm("Osvježit ću aplikaciju i povući zadnje podatke s Google Sheetsa. Nastavi?")) {
+        // We do NOT clear localStorage.clear() anymore because it deletes the API URL!
+        // Instead we clear only the state cache, and keep the API URL
+        localStorage.removeItem('hub_state');
+
         if ('serviceWorker' in navigator) {
             caches.keys().then(names => {
                 for (let name of names) caches.delete(name);
@@ -819,6 +825,43 @@ window.resetApp = () => {
         location.reload(true);
     }
 };
+
+async function fetchCloudData() {
+    if (!state.config.apiUrl) return;
+
+    const syncStatus = document.getElementById('sync-status');
+    if (syncStatus) syncStatus.className = 'sync-working';
+
+    try {
+        // Fetch Shopping List
+        const resShop = await fetch(`${state.config.apiUrl}?action=getShoppingList`);
+        const dataShop = await resShop.json();
+        if (Array.isArray(dataShop)) {
+            state.shoppingList = dataShop;
+            console.log("Cloud Shopping List Synced");
+        }
+
+        // Fetch Expenses
+        const resExp = await fetch(`${state.config.apiUrl}?action=getExpenses`);
+        const dataExp = await resExp.json();
+        if (Array.isArray(dataExp)) {
+            state.expenses = dataExp;
+            console.log("Cloud Expenses Synced");
+        }
+
+        saveLocalData();
+        renderShoppingList();
+        renderExpenses();
+        renderAnalytics();
+
+        showToast("Podaci sinkronizirani s oblaka!", "success");
+    } catch (err) {
+        console.error("Cloud fetch error:", err);
+        // Don't show error toast on startup unless it's a real failure
+    } finally {
+        if (syncStatus) syncStatus.className = 'sync-idle';
+    }
+}
 
 window.updateApiUrl = () => {
     const newUrl = prompt("Unesi novi Google App Script URL:", state.config.apiUrl);
