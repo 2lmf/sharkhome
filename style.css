@@ -117,8 +117,8 @@ h1 span {
 .tab-view {
     display: none;
     flex-direction: column;
-    padding: 1rem;
-    height: calc(100vh - 150px);
+    padding: 0.8rem 1rem;
+    height: calc(100vh - 120px);
     max-width: 600px;
     margin: 0 auto;
     width: 100%;
@@ -132,7 +132,7 @@ h1 span {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 1.5rem;
+    margin-bottom: 0.8rem;
 }
 
 h2 {
@@ -346,8 +346,8 @@ input[type="text"]:focus {
 .category-grid {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
-    gap: 12px;
-    margin-bottom: 2rem;
+    gap: 8px;
+    margin-bottom: 1rem;
 }
 
 .cat-btn {
@@ -359,9 +359,10 @@ input[type="text"]:focus {
     border: 1px solid var(--glass-border);
     border-radius: 12px;
     padding: 8px 5px;
-    font-size: 0.75rem;
+    font-size: 0.65rem;
     color: var(--text-main);
     text-transform: uppercase;
+    font-family: 'Orbitron', sans-serif;
     font-weight: 700;
     transition: all 0.2s;
     min-height: 55px;

@@ -49,7 +49,7 @@ document.addEventListener('DOMContentLoaded', () => {
     renderRecipes();
 
     // Show version in console for debugging
-    console.log("SharkHome v1.6 Loaded");
+    console.log("SharkHome v1.7 Loaded");
 });
 
 // Tab Navigation
@@ -291,7 +291,20 @@ function initBills() {
         if (btn.dataset.cat === selectedCategory) btn.classList.add('active');
 
         btn.addEventListener('click', () => {
-            selectedCategory = btn.dataset.cat;
+            if (btn.dataset.cat === 'Dodaj') {
+                const customCat = prompt("Unesi naziv nove kategorije:");
+                if (customCat && customCat.trim() !== "") {
+                    selectedCategory = customCat.trim();
+                    // Temporary visual feedback: change the button text
+                    btn.innerText = `➕ ${selectedCategory}`;
+                    btn.dataset.cat = selectedCategory;
+                } else {
+                    return; // Cancel
+                }
+            } else {
+                selectedCategory = btn.dataset.cat;
+            }
+
             catBtns.forEach(b => b.classList.remove('active'));
             btn.classList.add('active');
         });
