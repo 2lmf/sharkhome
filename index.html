@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="hr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>SharkHome</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="manifest" href="manifest.json">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Outfit:wght@300;400;600&display=swap"
+        rel="stylesheet">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+</head>
+
+<body>
+    <div class="glass-bg"></div>
+
+    <header>
+        <div class="header-content">
+            <h1>SHARK<span>HOME</span></h1>
+            <div id="sync-status" class="sync-idle"></div>
+        </div>
+    </header>
+
+    <main id="app">
+        <!-- Navigation Tabs -->
+        <nav class="tab-bar">
+            <button class="tab-btn active" data-tab="shopping">
+                <span class="icon">🛒</span>
+                <span class="label">Kupnja</span>
+            </button>
+            <button class="tab-btn" data-tab="bills">
+                <span class="icon">📄</span>
+                <span class="label">Režije</span>
+            </button>
+            <button class="tab-btn" data-tab="recipes">
+                <span class="icon">🍳</span>
+                <span class="label">Recepti</span>
+            </button>
+            <button class="tab-btn" data-tab="stats">
+                <span class="icon">📊</span>
+                <span class="label">Statistika</span>
+            </button>
+        </nav>
+
+        <!-- View Containers -->
+        <section id="view-shopping" class="tab-view active">
+            <div class="view-header">
+                <h2>Popis za dućan</h2>
+                <button id="btn-scan-product" class="icon-btn">📷</button>
+            </div>
+
+            <div class="input-group">
+                <input type="text" id="input-new-item" placeholder="Doda nešto na popis..." list="product-suggestions">
+                <datalist id="product-suggestions">
+                    <!-- Dynamic suggestions here -->
+                </datalist>
+                <button id="btn-voice" class="icon-btn" style="border-radius: 12px; margin-right: 5px;">🎤</button>
+                <button id="btn-add-item">+</button>
+            </div>
+
+            <div id="shopping-list-container" class="scroll-area">
+                <div class="loading-state">Učitavam popis...</div>
+            </div>
+        </section>
+
+        <section id="view-bills" class="tab-view">
+            <div class="view-header">
+                <h2>Režije</h2>
+                <button id="btn-scan-bill" class="icon-btn">📸</button>
+            </div>
+            <div id="bills-summary" class="summary-card">
+                <div class="stat">
+                    <span class="label">Mjesec</span>
+                    <span class="value">0,00 €</span>
+                </div>
+                <div class="stat">
+                    <span class="label">Plaćeno</span>
+                    <span class="value" style="color:var(--accent-green)">0</span>
+                </div>
+                <div class="stat">
+                    <span class="label">Čeka</span>
+                    <span class="value warning">0</span>
+                </div>
+            </div>
+            <div id="bills-list-container" class="scroll-area">
+                <!-- Bills will be listed here -->
+            </div>
+        </section>
+
+        <section id="view-recipes" class="tab-view">
+            <div class="view-header">
+                <h2>Moji Recepti</h2>
+                <button id="btn-add-recipe" class="icon-btn">+</button>
+            </div>
+            <section id="view-stats" class="tab-view">
+                <div class="view-header">
+                    <h2>Analitika Potrošnje</h2>
+                </div>
+                <div class="card chart-container">
+                    <canvas id="expenseChart"></canvas>
+                </div>
+                <div id="category-breakdown" class="scroll-area">
+                    <!-- Category list with totals -->
+                </div>
+            </section>
+    </main>
+
+    <!-- Scanner Overlay -->
+    <div id="scanner-overlay" class="overlay hidden">
+        <div id="reader"></div>
+        <button id="btn-close-scanner" class="close-btn">&times;</button>
+    </div>
+
+    <!-- Notification system -->
+    <div id="toast-container"></div>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://unpkg.com/html5-qrcode"></script>
+    <script src="app.js" type="module"></script>
+</body>
+
+</html>
