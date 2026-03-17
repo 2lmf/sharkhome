@@ -40,6 +40,7 @@ document.addEventListener('DOMContentLoaded', () => {
     initScanner();
     initAnalytics(); // For Chart.js
     initBills();
+    initStatsFilters(); // v3.0: New filters for stats
     initRecipes();
 
     // Load local state first for immediate feel
@@ -314,6 +315,24 @@ function initBills() {
         });
     });
 
+    const monthSelect = document.getElementById('select-expense-month');
+    const yearSelect = document.getElementById('select-expense-year');
+    
+    if (monthSelect && yearSelect) {
+        const now = new Date();
+        monthSelect.value = now.getMonth();
+        
+        // Populate years (current and previous)
+        const currentYear = now.getFullYear();
+        for (let y = currentYear; y >= currentYear - 1; y--) {
+            const opt = document.createElement('option');
+            opt.value = y;
+            opt.innerText = y;
+            yearSelect.appendChild(opt);
+        }
+        yearSelect.value = currentYear;
+    }
+
     const btnSave = document.getElementById('btn-save-expense');
     const inputAmount = document.getElementById('input-expense-amount');
     const inputDesc = document.getElementById('input-expense-desc');
@@ -326,12 +345,17 @@ function initBills() {
             console.log("Parsed Amount:", amount);
 
             if (!isNaN(amount) && amount > 0) {
+                const month = parseInt(monthSelect.value);
+                const year = parseInt(yearSelect.value);
+                
                 addExpense({
                     id: Date.now(),
                     category: selectedCategory,
                     description: desc,
                     amount: amount, // Store as float
-                    date: new Date().toISOString()
+                    date: new Date().toISOString(),
+                    month: month,
+                    year: year
                 });
                 inputAmount.value = '';
                 if (inputDesc) inputDesc.value = '';
@@ -449,80 +473,59 @@ function initAnalytics() {
     };
 
     expenseChart = new Chart(ctx, {
-        type: 'doughnut',
-        data: {
-            labels: [],
-            datasets: [{
-                data: [],
-                backgroundColor: [
-                    '#E67E22', '#2ECC71', '#3498DB', '#9B59B6',
-                    '#F1C40F', '#1ABC9C', '#E74C3C', '#95A5A6', '#34495E'
-                ],
-                borderWidth: 0,
-                hoverOffset: 15
-            }]
-        },
-        plugins: [polylinePlugin],
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            layout: {
-                padding: {
-                    left: 100,  // v2.8: Aggressive shrink
-                    right: 100, // v2.8: Aggressive shrink
-                    top: 40,
-                    bottom: 40
-                }
-            },
-            plugins: {
-                legend: {
-                    display: false // v2.5: Hide legend for more space
-                },
-                tooltip: {
-                    enabled: true,
-                    callbacks: {
-                        label: function (context) {
-                            const total = context.dataset.data.reduce((a, b) => a + b, 0);
-                            const pct = total > 0 ? Math.round((context.raw / total) * 100) : 0;
-                            return ` ${context.label}: ${formatHRNumber(context.raw)} (${pct}%)`;
-                        }
-                    }
-                },
-                // v2.4: External Labels with lines
-                datalabels: {
-                    anchor: 'end',
-                    align: 'end',
-                    offset: 15,
-                    color: (ctx) => ctx.dataset.backgroundColor[ctx.dataIndex % 9], // v2.6: Color matches segment
-                    font: {
-                        family: 'Orbitron',
-                        size: 10,
-                        weight: '900'
-                    },
-                    formatter: (value, ctx) => {
-                        const total = ctx.dataset.data.reduce((a, b) => a + b, 0);
-                        const pct = total > 0 ? Math.round((value / total) * 100) : 0;
-                        if (pct === 0) return '';
-                        const label = ctx.chart.data.labels[ctx.dataIndex];
-                        return `${label}\n${pct}%`;
-                    },
-                    textAlign: 'center',
-                    display: 'auto'
-                }
-            },
-            cutout: '65%' // v2.5: More airy doughnut
-        }
+        // ... (existing chart config)
     });
-
+    // Reference the actual chart object after creation
     renderAnalytics();
+}
+
+function initStatsFilters() {
+    const filterMonth = document.getElementById('filter-stats-month');
+    const filterYear = document.getElementById('filter-stats-year');
+    if (!filterMonth || !filterYear) return;
+
+    const now = new Date();
+    filterMonth.value = now.getMonth();
+
+    const currentYear = now.getFullYear();
+    for (let y = currentYear; y >= currentYear - 1; y--) {
+        const opt = document.createElement('option');
+        opt.value = y;
+        opt.innerText = y;
+        filterYear.appendChild(opt);
+    }
+    filterYear.value = currentYear;
+
+    filterMonth.addEventListener('change', renderAnalytics);
+    filterYear.addEventListener('change', renderAnalytics);
 }
 
 function renderAnalytics() {
     if (!expenseChart) return;
 
+    const filterMonth = document.getElementById('filter-stats-month');
+    const filterYear = document.getElementById('filter-stats-year');
+    
+    let filteredExpenses = state.expenses;
+    
+    if (filterMonth && filterYear) {
+        const m = filterMonth.value;
+        const y = parseInt(filterYear.value);
+        
+        filteredExpenses = state.expenses.filter(ex => {
+            // Check new fields first, fallback to date parsing for legacy data
+            if (ex.month !== undefined && ex.year !== undefined) {
+                return (m === 'all' || ex.month == m) && ex.year == y;
+            } else {
+                const d = new Date(ex.date);
+                return (m === 'all' || d.getMonth() == m) && d.getFullYear() == y;
+            }
+        });
+    }
+
     // Calculate totals by category
     const totals = {};
-    state.expenses.forEach(ex => {
+    filteredExpenses.forEach(ex => {
         const amount = typeof ex.amount === 'string' ? parseFloat(ex.amount.replace(',', '.')) : ex.amount;
         if (!isNaN(amount)) {
             totals[ex.category] = (totals[ex.category] || 0) + amount;

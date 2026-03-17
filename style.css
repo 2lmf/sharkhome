@@ -373,6 +373,37 @@ h2 {
     box-shadow: 0 2px 5px var(--accent-glow);
 }
 
+/* Month Select Styles */
+.expense-month-row, .stats-filter-row {
+    display: flex;
+    gap: 10px;
+}
+
+.stats-filter-row {
+    margin-bottom: 1.5rem;
+}
+
+.expense-select {
+    flex: 1;
+    background: rgba(0, 0, 0, 0.4);
+    border: 1px solid var(--glass-border);
+    border-radius: 12px;
+    color: white;
+    font-family: 'Orbitron', sans-serif;
+    padding: 0.8rem 1rem;
+    outline: none;
+    transition: border-color 0.3s;
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23E67E22' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 1rem center;
+    padding-right: 2.5rem;
+}
+
+.expense-select:focus {
+    border-color: var(--accent);
+}
+
 /* Input Styles */
 .input-group {
     display: flex;
