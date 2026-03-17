@@ -53,7 +53,7 @@ document.addEventListener('DOMContentLoaded', () => {
     fetchCloudData();
 
     // Show version in console for debugging
-    console.log("SharkHome v3.2 Loaded");
+    console.log("SharkHome v3.3 Loaded");
 });
 
 // Tab Navigation
@@ -897,35 +897,55 @@ function formatCroatianDate(iso) {
 }
 
 function parseDateSafe(dateInput) {
-    if (!dateInput) return new Date();
-    if (dateInput instanceof Date) return dateInput;
+    const fallback = new Date();
+    if (!dateInput) return fallback;
     
-    // 1. Probaj direktno (za ISO formate koji dolaze iz novih unosa)
+    // 1. Ako je već Date objekt
+    if (dateInput instanceof Date) {
+        return isNaN(dateInput.getTime()) ? fallback : dateInput;
+    }
+    
+    // 2. Probaj direktno (ISO, Timestamps, etc.)
     let d = new Date(dateInput);
     if (!isNaN(d.getTime())) return d;
     
-    // 2. Probaj hrvatski format iz Google Sheet-a: "dd.MM.yyyy. HH:mm"
+    // 3. Probaj hrvatski format: "17.03.2026. 19:53"
     if (typeof dateInput === 'string' && dateInput.includes('.')) {
         try {
-            // "17.03.2026. 17:36"
-            const parts = dateInput.trim().split(' ');
-            const dateStr = parts[0].replace(/\.$/, ''); // Makni zadnju točku ako postoji
-            const dateParts = dateStr.split('.'); // [17, 03, 2026]
-            const timeParts = parts[1] ? parts[1].split(':') : [0,0];
+            const clean = dateInput.trim();
+            const spaceParts = clean.split(/\s+/);
+            const dateStr = spaceParts[0].replace(/\.$/, ''); // Makni zadnju točku
+            const dateParts = dateStr.split('.');
             
             if (dateParts.length >= 3) {
-                return new Date(
-                    parseInt(dateParts[2]), 
-                    parseInt(dateParts[1]) - 1, 
-                    parseInt(dateParts[0]), 
-                    parseInt(timeParts[0] || 0), 
-                    parseInt(timeParts[1] || 0)
-                );
+                const year = parseInt(dateParts[2]);
+                const month = parseInt(dateParts[1]) - 1;
+                const day = parseInt(dateParts[0]);
+                
+                // Vrijeme ako postoji
+                let hour = 0;
+                let minute = 0;
+                if (spaceParts[1]) {
+                    const timeParts = spaceParts[1].split(':');
+                    hour = parseInt(timeParts[0]) || 0;
+                    minute = parseInt(timeParts[1]) || 0;
+                }
+                
+                const finalDate = new Date(year, month, day, hour, minute);
+                if (!isNaN(finalDate.getTime())) return finalDate;
             }
-        } catch(e) { console.error("Greška kod parseDateSafe:", e); }
+        } catch (e) {
+            console.warn("Parse error for:", dateInput, e);
+        }
     }
     
-    return new Date(); // Fallback na danasnji datum ako nista ne uspije
+    // 4. Zadnji pokušaj - ako je string broj "1710697200000"
+    if (!isNaN(dateInput)) {
+        let dn = new Date(parseInt(dateInput));
+        if (!isNaN(dn.getTime())) return dn;
+    }
+    
+    return fallback;
 }
 
 // Reset Logic - Safe Refresh (v2.0)
