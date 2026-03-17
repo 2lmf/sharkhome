@@ -53,7 +53,7 @@ document.addEventListener('DOMContentLoaded', () => {
     fetchCloudData();
 
     // Show version in console for debugging
-    console.log("SharkHome v3.3 Loaded");
+    console.log("SharkHome v3.4 Loaded");
 });
 
 // Tab Navigation
@@ -887,13 +887,19 @@ function formatHRNumber(num) {
 function formatCroatianDate(iso) {
     if (!iso) return "";
     const date = parseDateSafe(iso);
-    return date.toLocaleString('hr-HR', {
+    const result = date.toLocaleString('hr-HR', {
         day: '2-digit',
         month: '2-digit',
         year: 'numeric',
         hour: '2-digit',
         minute: '2-digit'
     });
+    
+    if (result === "Invalid Date") {
+        console.error("toLocaleString failed for:", iso, "Parsed as:", date);
+        return "Datum nepoznat";
+    }
+    return result;
 }
 
 function parseDateSafe(dateInput) {
@@ -940,7 +946,7 @@ function parseDateSafe(dateInput) {
     }
     
     // 4. Zadnji pokušaj - ako je string broj "1710697200000"
-    if (!isNaN(dateInput)) {
+    if (typeof dateInput === 'string' && !isNaN(dateInput) && dateInput !== "") {
         let dn = new Date(parseInt(dateInput));
         if (!isNaN(dn.getTime())) return dn;
     }
@@ -948,19 +954,20 @@ function parseDateSafe(dateInput) {
     return fallback;
 }
 
-// Reset Logic - Safe Refresh (v2.0)
-window.resetApp = () => {
-    if (confirm("Osvježit ću aplikaciju i povući zadnje podatke s Google Sheetsa. Nastavi?")) {
-        // We do NOT clear localStorage.clear() anymore because it deletes the API URL!
-        // Instead we clear only the state cache, and keep the API URL
-        localStorage.removeItem('hub_state');
-
+// Reset Logic - Safe Refresh (v3.4 Updated)
+window.resetApp = async () => {
+    if (confirm("Osvježit ću aplikaciju i OBRISATI KEŠ. Nastavi?")) {
         if ('serviceWorker' in navigator) {
-            caches.keys().then(names => {
-                for (let name of names) caches.delete(name);
-            });
+            const regs = await navigator.serviceWorker.getRegistrations();
+            for (let reg of regs) await reg.unregister();
         }
-        location.reload(true);
+        if ('caches' in window) {
+            const cacheNames = await caches.keys();
+            for (let name of cacheNames) await caches.delete(name);
+        }
+        
+        localStorage.removeItem('hub_state'); // Clear data cache but keep API URL
+        window.location.reload(true);
     }
 };
 

@@ -5,8 +5,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>SharkHome</title>
-    <link rel="stylesheet" href="style.css?v=3.3">
-    <link rel="manifest" href="manifest.json?v=3.3">
+    <link rel="stylesheet" href="style.css?v=3.4">
+    <link rel="manifest" href="manifest.json?v=3.4">
     <meta name="theme-color" content="#010103">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -22,7 +22,7 @@
 
     <header>
         <div class="header-content">
-            <h1>SHARK<span>HOME</span></h1>
+            <h1>SHARK<span style="color:var(--accent)">HOME</span> <span style="font-size: 10px; color: red; vertical-align: super;">v3.4</span></h1>
             <div class="header-right">
                 <div id="sync-status" class="sync-idle"></div>
                 <button class="btn-settings" onclick="updateApiUrl()" title="Postavke">
@@ -219,14 +219,14 @@
 
     <!-- Notification system -->
     <footer class="app-footer" style="padding: 20px; text-align: center; color: #555; font-size: 10px;">
-        SharkHome v3.3
+        SharkHome v3.4 | <a href="#" onclick="resetApp()" style="color: #777;">Hard Reset</a>
     </footer>
     <div id="toast-container"></div>
 
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2"></script>
     <script src="https://unpkg.com/html5-qrcode"></script>
-    <script src="app.js?v=3.3"></script>
+    <script src="app.js?v=3.4"></script>
 </body>
 
 </html>
