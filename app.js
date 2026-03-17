@@ -53,7 +53,7 @@ document.addEventListener('DOMContentLoaded', () => {
     fetchCloudData();
 
     // Show version in console for debugging
-    console.log("SharkHome v3.0 Loaded");
+    console.log("SharkHome v3.1 Loaded");
 });
 
 // Tab Navigation
@@ -315,24 +315,6 @@ function initBills() {
         });
     });
 
-    const monthSelect = document.getElementById('select-expense-month');
-    const yearSelect = document.getElementById('select-expense-year');
-    
-    if (monthSelect && yearSelect) {
-        const now = new Date();
-        monthSelect.value = now.getMonth();
-        
-        // Populate years (current and previous)
-        const currentYear = now.getFullYear();
-        for (let y = currentYear; y >= currentYear - 1; y--) {
-            const opt = document.createElement('option');
-            opt.value = y;
-            opt.innerText = y;
-            yearSelect.appendChild(opt);
-        }
-        yearSelect.value = currentYear;
-    }
-
     const btnSave = document.getElementById('btn-save-expense');
     const inputAmount = document.getElementById('input-expense-amount');
     const inputDesc = document.getElementById('input-expense-desc');
@@ -345,17 +327,12 @@ function initBills() {
             console.log("Parsed Amount:", amount);
 
             if (!isNaN(amount) && amount > 0) {
-                const month = parseInt(monthSelect.value);
-                const year = parseInt(yearSelect.value);
-                
                 addExpense({
                     id: Date.now(),
                     category: selectedCategory,
                     description: desc,
                     amount: amount, // Store as float
-                    date: new Date().toISOString(),
-                    month: month,
-                    year: year
+                    date: new Date().toISOString()
                 });
                 inputAmount.value = '';
                 if (inputDesc) inputDesc.value = '';
@@ -576,13 +553,11 @@ function renderAnalytics() {
         const y = parseInt(filterYear.value);
         
         filteredExpenses = state.expenses.filter(ex => {
-            // Check new fields first, fallback to date parsing for legacy data
-            if (ex.month !== undefined && ex.year !== undefined) {
-                return (m === 'all' || ex.month == m) && ex.year == y;
-            } else {
-                const d = new Date(ex.date);
-                return (m === 'all' || d.getMonth() == m) && d.getFullYear() == y;
-            }
+            const d = new Date(ex.date);
+            const entryMonth = d.getMonth();
+            const entryYear = d.getFullYear();
+            
+            return (m === 'all' || entryMonth == m) && entryYear == y;
         });
     }
 

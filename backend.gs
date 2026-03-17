@@ -64,7 +64,7 @@ function updateSheet(ss, sheetName, dataList) {
   sheet.clear();
   
   let headers = (sheetName === 'Expenses') 
-    ? ['id', 'category', 'amount', 'description', 'date', 'month', 'year'] 
+    ? ['id', 'category', 'amount', 'description', 'date'] 
     : ['id', 'text', 'completed', 'recipient', 'timestamp'];
 
   sheet.appendRow(headers);
