@@ -53,7 +53,7 @@ document.addEventListener('DOMContentLoaded', () => {
     fetchCloudData();
 
     // Show version in console for debugging
-    console.log("SharkHome v3.1 Loaded");
+    console.log("SharkHome v3.2 Loaded");
 });
 
 // Tab Navigation
@@ -553,7 +553,7 @@ function renderAnalytics() {
         const y = parseInt(filterYear.value);
         
         filteredExpenses = state.expenses.filter(ex => {
-            const d = new Date(ex.date);
+            const d = parseDateSafe(ex.date);
             const entryMonth = d.getMonth();
             const entryYear = d.getFullYear();
             
@@ -886,7 +886,7 @@ function formatHRNumber(num) {
 
 function formatCroatianDate(iso) {
     if (!iso) return "";
-    const date = new Date(iso);
+    const date = parseDateSafe(iso);
     return date.toLocaleString('hr-HR', {
         day: '2-digit',
         month: '2-digit',
@@ -894,6 +894,38 @@ function formatCroatianDate(iso) {
         hour: '2-digit',
         minute: '2-digit'
     });
+}
+
+function parseDateSafe(dateInput) {
+    if (!dateInput) return new Date();
+    if (dateInput instanceof Date) return dateInput;
+    
+    // 1. Probaj direktno (za ISO formate koji dolaze iz novih unosa)
+    let d = new Date(dateInput);
+    if (!isNaN(d.getTime())) return d;
+    
+    // 2. Probaj hrvatski format iz Google Sheet-a: "dd.MM.yyyy. HH:mm"
+    if (typeof dateInput === 'string' && dateInput.includes('.')) {
+        try {
+            // "17.03.2026. 17:36"
+            const parts = dateInput.trim().split(' ');
+            const dateStr = parts[0].replace(/\.$/, ''); // Makni zadnju točku ako postoji
+            const dateParts = dateStr.split('.'); // [17, 03, 2026]
+            const timeParts = parts[1] ? parts[1].split(':') : [0,0];
+            
+            if (dateParts.length >= 3) {
+                return new Date(
+                    parseInt(dateParts[2]), 
+                    parseInt(dateParts[1]) - 1, 
+                    parseInt(dateParts[0]), 
+                    parseInt(timeParts[0] || 0), 
+                    parseInt(timeParts[1] || 0)
+                );
+            }
+        } catch(e) { console.error("Greška kod parseDateSafe:", e); }
+    }
+    
+    return new Date(); // Fallback na danasnji datum ako nista ne uspije
 }
 
 // Reset Logic - Safe Refresh (v2.0)
