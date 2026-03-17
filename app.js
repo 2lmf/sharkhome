@@ -53,7 +53,7 @@ document.addEventListener('DOMContentLoaded', () => {
     fetchCloudData();
 
     // Show version in console for debugging
-    console.log("SharkHome v2.9 Loaded");
+    console.log("SharkHome v3.0 Loaded");
 });
 
 // Tab Navigation
