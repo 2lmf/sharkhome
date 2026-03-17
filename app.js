@@ -473,8 +473,71 @@ function initAnalytics() {
     };
 
     expenseChart = new Chart(ctx, {
-        // ... (existing chart config)
+        type: 'doughnut',
+        data: {
+            labels: [],
+            datasets: [{
+                data: [],
+                backgroundColor: [
+                    '#E67E22', '#2ECC71', '#3498DB', '#9B59B6',
+                    '#F1C40F', '#1ABC9C', '#E74C3C', '#95A5A6', '#34495E'
+                ],
+                borderWidth: 0,
+                hoverOffset: 15
+            }]
+        },
+        plugins: [polylinePlugin],
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            layout: {
+                padding: {
+                    left: 100,  // v2.8: Aggressive shrink
+                    right: 100, // v2.8: Aggressive shrink
+                    top: 40,
+                    bottom: 40
+                }
+            },
+            plugins: {
+                legend: {
+                    display: false // v2.5: Hide legend for more space
+                },
+                tooltip: {
+                    enabled: true,
+                    callbacks: {
+                        label: function (context) {
+                            const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                            const pct = total > 0 ? Math.round((context.raw / total) * 100) : 0;
+                            return ` ${context.label}: ${formatHRNumber(context.raw)} (${pct}%)`;
+                        }
+                    }
+                },
+                // v2.4: External Labels with lines
+                datalabels: {
+                    anchor: 'end',
+                    align: 'end',
+                    offset: 15,
+                    color: (ctx) => ctx.dataset.backgroundColor[ctx.dataIndex % 9], // v2.6: Color matches segment
+                    font: {
+                        family: 'Orbitron',
+                        size: 10,
+                        weight: '900'
+                    },
+                    formatter: (value, ctx) => {
+                        const total = ctx.dataset.data.reduce((a, b) => a + b, 0);
+                        const pct = total > 0 ? Math.round((value / total) * 100) : 0;
+                        if (pct === 0) return '';
+                        const label = ctx.chart.data.labels[ctx.dataIndex];
+                        return `${label}\n${pct}%`;
+                    },
+                    textAlign: 'center',
+                    display: 'auto'
+                }
+            },
+            cutout: '65%' // v2.5: More airy doughnut
+        }
     });
+
     // Reference the actual chart object after creation
     renderAnalytics();
 }
