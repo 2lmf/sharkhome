@@ -53,7 +53,7 @@ document.addEventListener('DOMContentLoaded', () => {
     fetchCloudData();
 
     // Show version in console for debugging
-    console.log("SharkHome v3.5 Loaded");
+    console.log("SharkHome v3.6 Loaded");
 });
 
 // Tab Navigation
@@ -940,9 +940,14 @@ function parseDateSafe(dateInput) {
         return isNaN(dateInput.getTime()) ? fallback : dateInput;
     }
     
-    // 2. Probaj direktno (ISO, Timestamps, etc.)
-    let d = new Date(dateInput);
-    if (!isNaN(d.getTime())) return d;
+    // 2. Probaj direktno (ISO, Timestamps, etc.) - ali preskoči HR format
+    //    jer Chrome pogrešno čita "10.04.2026" kao "MM/DD/YYYY" (10. listopada)
+    //    kada je dan ≤ 12, što izbacuje unose iz pogrešnog filtera
+    const isHrFormat = typeof dateInput === 'string' && /^\d{1,2}\.\d{1,2}\.\d{4}/.test(dateInput);
+    if (!isHrFormat) {
+        let d = new Date(dateInput);
+        if (!isNaN(d.getTime())) return d;
+    }
     
     // 3. Probaj hrvatski format: "17.03.2026. 19:53"
     if (typeof dateInput === 'string' && dateInput.includes('.')) {
