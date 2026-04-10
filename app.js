@@ -424,15 +424,12 @@ function initAnalytics() {
                 const { x, y, startAngle, endAngle, outerRadius } = datapoint;
                 const midAngle = startAngle + (endAngle - startAngle) / 2;
 
-                // Calculate points for the line
-                const x1 = x + Math.cos(midAngle) * outerRadius;
-                const y1 = y + Math.sin(midAngle) * outerRadius;
+                // Ravna radijalna crta koja staje tik prije labele (label offset=26)
+                const x1 = x + Math.cos(midAngle) * (outerRadius + 4);
+                const y1 = y + Math.sin(midAngle) * (outerRadius + 4);
 
-                const x2 = x + Math.cos(midAngle) * (outerRadius + 28);
-                const y2 = y + Math.sin(midAngle) * (outerRadius + 28);
-
-                const x3 = x2 + (Math.cos(midAngle) >= 0 ? 20 : -20);
-                const y3 = y2;
+                const x2 = x + Math.cos(midAngle) * (outerRadius + 20);
+                const y2 = y + Math.sin(midAngle) * (outerRadius + 20);
 
                 // Only draw if label is shown (> 0)
                 const value = data.datasets[0].data[index];
@@ -442,7 +439,6 @@ function initAnalytics() {
                     ctx.strokeStyle = datapoint.options.backgroundColor;
                     ctx.moveTo(x1, y1);
                     ctx.lineTo(x2, y2);
-                    ctx.lineTo(x3, y3);
                     ctx.stroke();
                 }
             });
@@ -493,7 +489,7 @@ function initAnalytics() {
                 datalabels: {
                     anchor: 'end',
                     align: 'end',
-                    offset: 22,
+                    offset: 26,
                     color: (ctx) => ctx.dataset.backgroundColor[ctx.dataIndex % 9],
                     font: {
                         family: 'Orbitron',
