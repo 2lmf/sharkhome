@@ -428,8 +428,8 @@ function initAnalytics() {
                 const x1 = x + Math.cos(midAngle) * (outerRadius + 4);
                 const y1 = y + Math.sin(midAngle) * (outerRadius + 4);
 
-                const x2 = x + Math.cos(midAngle) * (outerRadius + 20);
-                const y2 = y + Math.sin(midAngle) * (outerRadius + 20);
+                const x2 = x + Math.cos(midAngle) * (outerRadius + 30);
+                const y2 = y + Math.sin(midAngle) * (outerRadius + 30);
 
                 // Only draw if label is shown (> 0)
                 const value = data.datasets[0].data[index];
@@ -489,7 +489,7 @@ function initAnalytics() {
                 datalabels: {
                     anchor: 'end',
                     align: 'end',
-                    offset: 26,
+                    offset: 36,
                     color: (ctx) => ctx.dataset.backgroundColor[ctx.dataIndex % 9],
                     font: {
                         family: 'Orbitron',
