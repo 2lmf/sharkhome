@@ -53,7 +53,7 @@ document.addEventListener('DOMContentLoaded', () => {
     fetchCloudData();
 
     // Show version in console for debugging
-    console.log("SharkHome v3.4 Loaded");
+    console.log("SharkHome v3.5 Loaded");
 });
 
 // Tab Navigation
@@ -564,17 +564,27 @@ function renderAnalytics() {
     // Calculate totals by category
     const totals = {};
     filteredExpenses.forEach(ex => {
-        const amount = typeof ex.amount === 'string' ? parseFloat(ex.amount.replace(',', '.')) : ex.amount;
-        if (!isNaN(amount)) {
-            totals[ex.category] = (totals[ex.category] || 0) + amount;
+        const amount = cleanAmount(ex.amount);
+        if (amount !== 0) {
+            // Trim and normalize category casing for grouping stability
+            const catName = ex.category ? ex.category.trim() : "Ostalo";
+            totals[catName] = (totals[catName] || 0) + amount;
         }
     });
 
     const labels = Object.keys(totals);
     const data = Object.values(totals);
 
+    // v3.5: Ensure colors are dynamically assigned and rotated
+    const baseColors = [
+        '#E67E22', '#2ECC71', '#3498DB', '#9B59B6',
+        '#F1C40F', '#1ABC9C', '#E74C3C', '#95A5A6', '#34495E'
+    ];
+    const segmentColors = labels.map((_, i) => baseColors[i % baseColors.length]);
+
     expenseChart.data.labels = labels;
     expenseChart.data.datasets[0].data = data;
+    expenseChart.data.datasets[0].backgroundColor = segmentColors;
     expenseChart.update();
 
     // Render Breakdown List
@@ -595,7 +605,7 @@ function renderAnalytics() {
             <div class="breakdown-grid">
                 ${labels.map((cat, i) => {
             const percentage = totalSum > 0 ? Math.round((totals[cat] / totalSum) * 100) : 0;
-            const color = expenseChart.data.datasets[0].backgroundColor[i % 9];
+            const color = segmentColors[i]; // Use the same color as the chart</code>
             return `
                     <div class="breakdown-item" style="border-left: 3px solid ${color};">
                         <div class="breakdown-info">
@@ -638,7 +648,7 @@ function renderExpenses() {
 
     container.innerHTML = state.expenses.map(ex => {
         // Handle old string amounts safely
-        const amountFloat = typeof ex.amount === 'string' ? parseFloat(ex.amount.replace(',', '.')) : ex.amount;
+        const amountFloat = cleanAmount(ex.amount);
         const descText = ex.description ? ` - ${ex.description}` : '';
 
         return `
@@ -874,6 +884,25 @@ window.addRecipeToShoppingList = (id) => {
 window.addItemToShoppingList = addItemToShoppingList;
 
 // Utility: Formatting
+function cleanAmount(val) {
+    if (val === undefined || val === null) return 0;
+    if (typeof val === 'number') return val;
+    
+    let str = val.toString().trim();
+    
+    // Check if it's formatted like 1.234,56 (Croatian Excel style)
+    if (str.includes(',') && str.split(',').length === 2) {
+        // Remove all dots (thousands) and change comma to dot (decimal)
+        str = str.replace(/\./g, '').replace(',', '.');
+    } else if (str.includes(',')) {
+        // Fallback for just comma
+        str = str.replace(',', '.');
+    }
+    
+    const cleaned = parseFloat(str);
+    return isNaN(cleaned) ? 0 : cleaned;
+}
+
 function formatHRNumber(num) {
     if (isNaN(num)) return "0,00 €";
     return new Intl.NumberFormat('hr-HR', {

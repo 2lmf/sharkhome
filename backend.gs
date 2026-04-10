@@ -74,6 +74,9 @@ function updateSheet(ss, sheetName, dataList) {
     const row = headers.map(h => {
       let val = item[h];
       
+      // Sanitization: Trim strings to prevent grouping bugs (e.g. " Kartica" vs "Kartica")
+      if (typeof val === 'string') val = val.trim();
+      
       // Robust number formatting for Excel (1.234,50) - avoiding Intl.NumberFormat
       if (h === 'amount' && typeof val === 'number') {
         var parts = val.toFixed(2).split(".");
