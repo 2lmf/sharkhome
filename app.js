@@ -428,10 +428,10 @@ function initAnalytics() {
                 const x1 = x + Math.cos(midAngle) * outerRadius;
                 const y1 = y + Math.sin(midAngle) * outerRadius;
 
-                const x2 = x + Math.cos(midAngle) * (outerRadius + 15);
-                const y2 = y + Math.sin(midAngle) * (outerRadius + 15);
+                const x2 = x + Math.cos(midAngle) * (outerRadius + 28);
+                const y2 = y + Math.sin(midAngle) * (outerRadius + 28);
 
-                const x3 = x2 + (Math.cos(midAngle) >= 0 ? 10 : -10);
+                const x3 = x2 + (Math.cos(midAngle) >= 0 ? 20 : -20);
                 const y3 = y2;
 
                 // Only draw if label is shown (> 0)
@@ -469,10 +469,10 @@ function initAnalytics() {
             maintainAspectRatio: false,
             layout: {
                 padding: {
-                    left: 100,  // v2.8: Aggressive shrink
-                    right: 100, // v2.8: Aggressive shrink
-                    top: 40,
-                    bottom: 40
+                    left: 120,
+                    right: 120,
+                    top: 55,
+                    bottom: 55
                 }
             },
             plugins: {
@@ -493,11 +493,11 @@ function initAnalytics() {
                 datalabels: {
                     anchor: 'end',
                     align: 'end',
-                    offset: 15,
-                    color: (ctx) => ctx.dataset.backgroundColor[ctx.dataIndex % 9], // v2.6: Color matches segment
+                    offset: 22,
+                    color: (ctx) => ctx.dataset.backgroundColor[ctx.dataIndex % 9],
                     font: {
                         family: 'Orbitron',
-                        size: 10,
+                        size: 9,
                         weight: '900'
                     },
                     formatter: (value, ctx) => {
@@ -508,7 +508,8 @@ function initAnalytics() {
                         return `${label}\n${pct}%`;
                     },
                     textAlign: 'center',
-                    display: 'auto'
+                    display: true,
+                    clamp: false
                 }
             },
             cutout: '65%' // v2.5: More airy doughnut
