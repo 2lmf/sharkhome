@@ -87,7 +87,7 @@ function updateSheet(ss, sheetName, dataList) {
       // Format ISO dates to readable Croatian format
       if (typeof val === 'string' && val.includes('T') && val.includes('Z')) {
         try {
-            return Utilities.formatDate(new Date(val), "GMT+1", "dd.MM.yyyy. HH:mm");
+            return Utilities.formatDate(new Date(val), "Europe/Zagreb", "dd.MM.yyyy. HH:mm");
         } catch(e) { return val; }
       }
       

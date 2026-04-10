@@ -528,7 +528,7 @@ function initStatsFilters() {
     filterMonth.value = now.getMonth();
 
     const currentYear = now.getFullYear();
-    for (let y = currentYear; y >= currentYear - 1; y--) {
+    for (let y = currentYear; y >= currentYear - 3; y--) {
         const opt = document.createElement('option');
         opt.value = y;
         opt.innerText = y;
