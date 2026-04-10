@@ -605,7 +605,7 @@ function renderAnalytics() {
             <div class="breakdown-grid">
                 ${labels.map((cat, i) => {
             const percentage = totalSum > 0 ? Math.round((totals[cat] / totalSum) * 100) : 0;
-            const color = segmentColors[i]; // Use the same color as the chart</code>
+            const color = segmentColors[i]; // Use the same color as the chart
             return `
                     <div class="breakdown-item" style="border-left: 3px solid ${color};">
                         <div class="breakdown-info">
